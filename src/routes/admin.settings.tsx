@@ -10,7 +10,8 @@ export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,
 });
 
-type Plan = { id: string; name: string; price_mt: number; credits: number; duration_days: number; active: boolean };
+type PlanId = "daily" | "weekly" | "monthly";
+type Plan = { id: PlanId; name: string; price_mt: number; credits: number; duration_days: number; active: boolean };
 
 function AdminSettings() {
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -21,7 +22,7 @@ function AdminSettings() {
   };
   useEffect(() => { load(); }, []);
 
-  const update = async (id: string, patch: Partial<Plan>) => {
+  const update = async (id: PlanId, patch: Partial<Omit<Plan, "id">>) => {
     const { error } = await supabase.from("plans").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Plano atualizado");
