@@ -30,11 +30,8 @@ function Dashboard() {
       });
   }, [user]);
 
-  const planLabel = {
-    daily: "Diário",
-    weekly: "Semanal",
-    monthly: "Mensal",
-  }[profile?.current_plan ?? ""] ?? "Sem plano";
+  const planMap: Record<string, string> = { daily: "Diário", weekly: "Semanal", monthly: "Mensal" };
+  const planLabel = profile?.current_plan ? planMap[profile.current_plan] : "Sem plano";
 
   const expiresIn = profile?.plan_expires_at
     ? Math.max(0, Math.ceil((new Date(profile.plan_expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
