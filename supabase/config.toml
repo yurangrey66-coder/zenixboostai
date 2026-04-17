@@ -1,1 +1,10 @@
 project_id = "jltipylfxmthuxsybltt"
+
+[functions.generate-ad]
+verify_jwt = true
+
+[functions.boost-ad]
+verify_jwt = true
+
+[functions.zenix-ai-admin]
+verify_jwt = true
