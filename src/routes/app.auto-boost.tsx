@@ -50,7 +50,7 @@ function AutoBoostPage() {
     setSaving(true);
     const next = { ...settings, ...updates };
     setSettings(next);
-    const { error } = await supabase.from("auto_boost_settings").upsert({
+    const { error } = await (supabase.from("auto_boost_settings") as any).upsert({
       user_id: user.id,
       enabled: next.enabled,
       preferred_style: next.preferred_style,
