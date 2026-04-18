@@ -8,3 +8,6 @@ verify_jwt = true
 
 [functions.zenix-ai-admin]
 verify_jwt = true
+
+[functions.auto-boost-runner]
+verify_jwt = false
