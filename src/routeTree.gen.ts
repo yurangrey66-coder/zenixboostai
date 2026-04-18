@@ -17,6 +17,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AppPlansRouteImport } from './routes/app.plans'
 import { Route as AppCreateRouteImport } from './routes/app.create'
+import { Route as AppAutoBoostRouteImport } from './routes/app.auto-boost'
 import { Route as AppAdsRouteImport } from './routes/app.ads'
 import { Route as AdminZenixAiRouteImport } from './routes/admin.zenix-ai'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
@@ -64,6 +65,11 @@ const AppCreateRoute = AppCreateRouteImport.update({
   path: '/create',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAutoBoostRoute = AppAutoBoostRouteImport.update({
+  id: '/auto-boost',
+  path: '/auto-boost',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdsRoute = AppAdsRouteImport.update({
   id: '/ads',
   path: '/ads',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AdminUsersRoute
   '/admin/zenix-ai': typeof AdminZenixAiRoute
   '/app/ads': typeof AppAdsRoute
+  '/app/auto-boost': typeof AppAutoBoostRoute
   '/app/create': typeof AppCreateRoute
   '/app/plans': typeof AppPlansRoute
   '/admin/': typeof AdminIndexRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AdminUsersRoute
   '/admin/zenix-ai': typeof AdminZenixAiRoute
   '/app/ads': typeof AppAdsRoute
+  '/app/auto-boost': typeof AppAutoBoostRoute
   '/app/create': typeof AppCreateRoute
   '/app/plans': typeof AppPlansRoute
   '/admin': typeof AdminIndexRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/admin/users': typeof AdminUsersRoute
   '/admin/zenix-ai': typeof AdminZenixAiRoute
   '/app/ads': typeof AppAdsRoute
+  '/app/auto-boost': typeof AppAutoBoostRoute
   '/app/create': typeof AppCreateRoute
   '/app/plans': typeof AppPlansRoute
   '/admin/': typeof AdminIndexRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/admin/zenix-ai'
     | '/app/ads'
+    | '/app/auto-boost'
     | '/app/create'
     | '/app/plans'
     | '/admin/'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/admin/zenix-ai'
     | '/app/ads'
+    | '/app/auto-boost'
     | '/app/create'
     | '/app/plans'
     | '/admin'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/admin/zenix-ai'
     | '/app/ads'
+    | '/app/auto-boost'
     | '/app/create'
     | '/app/plans'
     | '/admin/'
@@ -256,6 +268,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCreateRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/auto-boost': {
+      id: '/app/auto-boost'
+      path: '/auto-boost'
+      fullPath: '/app/auto-boost'
+      preLoaderRoute: typeof AppAutoBoostRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/ads': {
       id: '/app/ads'
       path: '/ads'
@@ -323,6 +342,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppRouteChildren {
   AppAdsRoute: typeof AppAdsRoute
+  AppAutoBoostRoute: typeof AppAutoBoostRoute
   AppCreateRoute: typeof AppCreateRoute
   AppPlansRoute: typeof AppPlansRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -330,6 +350,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppAdsRoute: AppAdsRoute,
+  AppAutoBoostRoute: AppAutoBoostRoute,
   AppCreateRoute: AppCreateRoute,
   AppPlansRoute: AppPlansRoute,
   AppIndexRoute: AppIndexRoute,
@@ -346,3 +367,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
