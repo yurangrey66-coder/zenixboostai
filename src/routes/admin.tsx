@@ -7,6 +7,9 @@ export const Route = createFileRoute("/admin")({
   beforeLoad: async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/auth" });
+    if (session.user.email !== "yurangrey66@gmail.com") {
+      throw redirect({ to: "/app" });
+    }
     const { data: roles } = await supabase
       .from("user_roles")
       .select("role")
