@@ -62,6 +62,42 @@ export type Database = {
         }
         Relationships: []
       }
+      auto_boost_settings: {
+        Row: {
+          base_theme: string
+          created_at: string
+          enabled: boolean
+          id: string
+          last_run_at: string | null
+          preferred_style: Database["public"]["Enums"]["ad_style"]
+          total_generated: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          base_theme?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_run_at?: string | null
+          preferred_style?: Database["public"]["Enums"]["ad_style"]
+          total_generated?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          base_theme?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_run_at?: string | null
+          preferred_style?: Database["public"]["Enums"]["ad_style"]
+          total_generated?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       credit_transactions: {
         Row: {
           ad_id: string | null
@@ -249,6 +285,7 @@ export type Database = {
     }
     Functions: {
       approve_payment: { Args: { _payment_id: string }; Returns: undefined }
+      auto_refresh_all_statuses: { Args: never; Returns: undefined }
       consume_credit: {
         Args: { _ad_id?: string; _reason: string; _user_id: string }
         Returns: boolean

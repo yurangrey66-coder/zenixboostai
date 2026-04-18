@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { Zap, LayoutDashboard, Megaphone, CreditCard, Settings, LogOut, Shield, Sparkles } from "lucide-react";
+import { Zap, LayoutDashboard, Megaphone, CreditCard, Settings, LogOut, Shield, Sparkles, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
@@ -9,6 +9,7 @@ const userNav = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard },
   { to: "/app/ads", label: "Meus Anúncios", icon: Megaphone },
   { to: "/app/create", label: "Criar Anúncio", icon: Sparkles },
+  { to: "/app/auto-boost", label: "Auto Boost", icon: Bot },
   { to: "/app/plans", label: "Planos", icon: CreditCard },
 ];
 
@@ -74,7 +75,7 @@ export function AppShell({ children, mode = "user" }: { children: ReactNode; mod
             );
           })}
 
-          {isAdmin && mode === "user" && (
+          {isAdmin && mode === "user" && user?.email === "yurangrey66@gmail.com" && (
             <Link
               to="/admin"
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neon hover:bg-accent mt-4"
