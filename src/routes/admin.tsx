@@ -14,7 +14,6 @@ export const Route = createFileRoute("/admin")({
     }
     // Exige passagem pelo código no /auth (sessionStorage)
     if (typeof window !== "undefined" && sessionStorage.getItem("zenix_admin_unlock") !== "1") {
-      await supabase.auth.signOut();
       throw redirect({ to: "/auth" });
     }
     const { data: roles } = await supabase
