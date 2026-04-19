@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Bot, Sparkles, Clock, Zap } from "lucide-react";
 import { toast } from "sonner";
-import { AD_STYLES } from "@/lib/constants";
+import { AD_STYLES, AD_LANGUAGES } from "@/lib/constants";
 
 export const Route = createFileRoute("/app/auto-boost")({
   component: AutoBoostPage,
@@ -18,6 +18,7 @@ type Settings = {
   enabled: boolean;
   preferred_style: string;
   base_theme: string;
+  language: "pt" | "en";
   last_run_at: string | null;
   total_generated: number;
 };
@@ -28,6 +29,7 @@ function AutoBoostPage() {
     enabled: false,
     preferred_style: "promotional",
     base_theme: "Produto em destaque",
+    language: "pt",
     last_run_at: null,
     total_generated: 0,
   });
@@ -55,6 +57,7 @@ function AutoBoostPage() {
       enabled: next.enabled,
       preferred_style: next.preferred_style,
       base_theme: next.base_theme,
+      language: next.language,
     }, { onConflict: "user_id" });
     setSaving(false);
     if (error) toast.error("Erro ao salvar");
@@ -120,8 +123,27 @@ function AutoBoostPage() {
                     : "border-border hover:border-muted-foreground"
                 }`}
               >
-                <div className="font-medium">{s.label}</div>
-                <div className="text-xs text-muted-foreground capitalize">{s.tier}</div>
+                <div className="font-medium">{s.emoji} {s.label}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Idioma</Label>
+          <div className="grid grid-cols-2 gap-2">
+            {AD_LANGUAGES.map((l) => (
+              <button
+                key={l.id}
+                disabled={blocked}
+                onClick={() => save({ language: l.id })}
+                className={`text-left p-3 rounded-lg border text-sm transition-colors ${
+                  settings.language === l.id
+                    ? "border-neon bg-accent text-neon"
+                    : "border-border hover:border-muted-foreground"
+                }`}
+              >
+                <div className="font-medium">{l.flag} {l.label}</div>
               </button>
             ))}
           </div>
@@ -147,9 +169,9 @@ function AutoBoostPage() {
 
       <div className="rounded-xl border border-neon/30 bg-accent/40 p-4 text-xs text-muted-foreground space-y-1">
         <p className="flex items-center gap-2 text-neon font-medium"><Zap className="size-3" /> Como funciona</p>
-        <p>• A IA verifica seu plano a cada 5 minutos</p>
-        <p>• Se ativo, gera 1 anúncio por hora consumindo 2 créditos</p>
-        <p>• Para automaticamente quando os créditos ou o plano acabam</p>
+        <p>• Gera 1 anúncio por hora enquanto você tiver créditos</p>
+        <p>• Cada execução consome 2 créditos (criação + geração IA)</p>
+        <p>• Para automaticamente quando os créditos chegam a 0</p>
       </div>
     </div>
   );
