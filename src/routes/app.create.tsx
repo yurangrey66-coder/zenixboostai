@@ -1,14 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Lock, Sparkles, AlertTriangle } from "lucide-react";
+import { Lock, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { AD_STYLES, buildWhatsAppUrl } from "@/lib/constants";
+import { AD_STYLES, AD_LANGUAGES, buildWhatsAppUrl } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { StatusBanner } from "@/components/StatusBanner";
 
@@ -22,30 +22,19 @@ function CreateAd() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [style, setStyle] = useState<string>("classic");
-  const [allowedStyles, setAllowedStyles] = useState<string[]>([]);
+  const [language, setLanguage] = useState<"pt" | "en">("pt");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!profile?.current_plan) return;
-    supabase
-      .from("plans")
-      .select("allowed_styles")
-      .eq("id", profile.current_plan)
-      .maybeSingle()
-      .then(({ data }) => setAllowedStyles((data?.allowed_styles as string[]) ?? []));
-  }, [profile?.current_plan]);
-
-  const blocked = !profile || profile.status === "blocked";
+  const blocked = !profile || profile.status === "blocked" || profile.credits < 2;
 
   const generate = async () => {
     if (!user) return;
-    if (blocked) return toast.error("Conta bloqueada");
+    if (blocked) return toast.error("Sem créditos suficientes");
     if (!title.trim()) return toast.error("Informe o título");
-    if (!allowedStyles.includes(style)) return toast.error("Estilo bloqueado para o seu plano");
 
     setLoading(true);
     const { data, error } = await supabase.functions.invoke("generate-ad", {
-      body: { title, description, style },
+      body: { title, description, style, language },
     });
     setLoading(false);
 
@@ -58,18 +47,18 @@ function CreateAd() {
     navigate({ to: "/app/ads" });
   };
 
-  if (blocked) {
+  if (!profile || profile.status === "blocked") {
     return (
       <div className="max-w-2xl mx-auto space-y-4">
         <StatusBanner />
         <div className="rounded-2xl border border-border bg-gradient-card p-8 text-center">
           <Lock className="size-10 text-muted-foreground mx-auto mb-3" />
-          <h2 className="font-display font-bold text-xl">Acesso bloqueado</h2>
+          <h2 className="font-display font-bold text-xl">Sem créditos</h2>
           <p className="text-muted-foreground text-sm mt-2">
-            Você precisa de um plano ativo e créditos disponíveis para criar anúncios.
+            Você precisa de créditos para criar anúncios. Compre um pacote a partir de 10 MT.
           </p>
           <Button asChild className="mt-5 bg-gradient-neon text-neon-foreground">
-            <a href={buildWhatsAppUrl()} target="_blank" rel="noopener">Atualizar plano via WhatsApp</a>
+            <a href={buildWhatsAppUrl()} target="_blank" rel="noopener">Comprar créditos via WhatsApp</a>
           </Button>
         </div>
       </div>
@@ -101,38 +90,49 @@ function CreateAd() {
         </div>
 
         <div className="space-y-2">
+          <Label>Idioma do texto do anúncio</Label>
+          <div className="grid grid-cols-2 gap-2">
+            {AD_LANGUAGES.map((l) => (
+              <button
+                key={l.id}
+                type="button"
+                onClick={() => setLanguage(l.id)}
+                className={cn(
+                  "rounded-xl border p-3 text-sm font-medium transition flex items-center gap-2 justify-center",
+                  language === l.id
+                    ? "border-neon bg-accent text-neon glow-neon-sm"
+                    : "border-border bg-card hover:border-neon/50"
+                )}
+              >
+                <span className="text-base">{l.flag}</span> {l.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            Em português usamos PT-PT (Portugal), com ortografia e marketing profissional.
+          </p>
+        </div>
+
+        <div className="space-y-2">
           <Label>Estilo visual</Label>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {AD_STYLES.map((s) => {
-              const locked = !allowedStyles.includes(s.id);
-              return (
-                <button
-                  type="button"
-                  key={s.id}
-                  onClick={() => !locked && setStyle(s.id)}
-                  disabled={locked}
-                  className={cn(
-                    "relative rounded-xl border p-3 text-left text-sm transition",
-                    style === s.id && !locked
-                      ? "border-neon bg-accent text-neon glow-neon-sm"
-                      : "border-border bg-card hover:border-neon/50",
-                    locked && "opacity-50 cursor-not-allowed"
-                  )}
-                >
-                  <div className="text-lg">{s.emoji}</div>
-                  <div className="font-medium mt-1">{s.label}</div>
-                  {locked && (
-                    <Lock className="size-3 absolute top-2 right-2 text-muted-foreground" />
-                  )}
-                </button>
-              );
-            })}
+            {AD_STYLES.map((s) => (
+              <button
+                type="button"
+                key={s.id}
+                onClick={() => setStyle(s.id)}
+                className={cn(
+                  "relative rounded-xl border p-3 text-left text-sm transition",
+                  style === s.id
+                    ? "border-neon bg-accent text-neon glow-neon-sm"
+                    : "border-border bg-card hover:border-neon/50"
+                )}
+              >
+                <div className="text-lg">{s.emoji}</div>
+                <div className="font-medium mt-1">{s.label}</div>
+              </button>
+            ))}
           </div>
-          {allowedStyles.length < AD_STYLES.length && (
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <AlertTriangle className="size-3" /> Atualize seu plano para desbloquear mais estilos.
-            </p>
-          )}
         </div>
 
         <Button

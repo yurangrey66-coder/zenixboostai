@@ -4,51 +4,52 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { buildWhatsAppUrl } from "@/lib/constants";
-import { Crown, MessageCircle, CheckCircle2 } from "lucide-react";
+import { Sparkles, MessageCircle, CheckCircle2, Gift } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/plans")({
-  component: PlansPage,
+  component: PackagesPage,
 });
 
-type Plan = {
-  id: "daily" | "weekly" | "monthly";
+type Pkg = {
+  id: string;
   name: string;
-  price_mt: number;
   credits: number;
-  duration_days: number;
-  allowed_styles: string[];
+  bonus_credits: number;
+  price_mt: number;
+  sort_order: number;
 };
 
-function PlansPage() {
+function PackagesPage() {
   const { user, profile, refreshProfile } = useAuth();
-  const [plans, setPlans] = useState<Plan[]>([]);
+  const [packages, setPackages] = useState<Pkg[]>([]);
   const [requesting, setRequesting] = useState<string | null>(null);
 
   useEffect(() => {
     supabase
-      .from("plans")
+      .from("credit_packages")
       .select("*")
       .eq("active", true)
-      .order("price_mt")
-      .then(({ data }) => setPlans((data as Plan[]) ?? []));
+      .order("sort_order")
+      .then(({ data }) => setPackages((data as Pkg[]) ?? []));
   }, []);
 
-  const requestPlan = async (plan: Plan) => {
+  const requestPackage = async (pkg: Pkg) => {
     if (!user) return;
-    setRequesting(plan.id);
+    setRequesting(pkg.id);
     const { error } = await supabase.from("payments").insert({
       user_id: user.id,
-      plan_id: plan.id,
-      amount_mt: plan.price_mt,
+      package_id: pkg.id,
+      amount_mt: pkg.price_mt,
       method: "whatsapp",
-      notes: "Solicitação via app",
+      notes: `Pacote ${pkg.name}`,
     });
     setRequesting(null);
     if (error) return toast.error("Erro", { description: error.message });
 
-    toast.success("Solicitação registrada!", { description: "Confirme o pagamento via WhatsApp." });
-    const msg = `Olá ZENIX BOOST, quero o plano ${plan.name} (${plan.price_mt} MT). Email: ${user.email}`;
+    toast.success("Solicitação registada!", { description: "Confirme o pagamento via WhatsApp." });
+    const total = pkg.credits + pkg.bonus_credits;
+    const msg = `Olá ZENIX BOOST, quero comprar o pacote de ${total} créditos por ${pkg.price_mt} MT. Email: ${user.email}`;
     window.open(buildWhatsAppUrl(msg), "_blank");
     await refreshProfile();
   };
@@ -56,60 +57,62 @@ function PlansPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl md:text-3xl font-display font-bold">Planos</h1>
+        <h1 className="text-2xl md:text-3xl font-display font-bold">Pacotes de créditos</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Plano atual: <span className="text-neon font-semibold">
-            {profile?.current_plan ? plans.find((p) => p.id === profile.current_plan)?.name ?? "—" : "Nenhum"}
-          </span>
+          Saldo atual: <span className="text-neon font-semibold">{profile?.credits ?? 0} créditos</span>
         </p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-5">
-        {plans.map((p) => {
-          const featured = p.id === "weekly";
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {packages.map((p) => {
+          const featured = p.id === "pack_10";
+          const total = p.credits + p.bonus_credits;
           return (
             <div
               key={p.id}
-              className={`relative rounded-2xl p-6 border ${
+              className={`relative rounded-2xl p-5 border ${
                 featured ? "border-neon bg-gradient-card glow-neon-sm" : "border-border bg-card"
               }`}
             >
               {featured && (
-                <div className="absolute -top-3 left-6 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-neon text-neon-foreground">
-                  POPULAR
+                <div className="absolute -top-3 left-5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-neon text-neon-foreground">
+                  MAIS POPULAR
                 </div>
               )}
               <div className="flex items-center gap-2">
-                {p.id === "monthly" && <Crown className="size-4 text-neon" />}
-                <h3 className="font-display font-bold text-xl">{p.name}</h3>
+                <Sparkles className="size-4 text-neon" />
+                <h3 className="font-display font-bold text-lg">{p.credits} créditos</h3>
               </div>
+              {p.bonus_credits > 0 && (
+                <div className="mt-1 inline-flex items-center gap-1 text-xs text-neon">
+                  <Gift className="size-3" /> +{p.bonus_credits} bónus = {total} totais
+                </div>
+              )}
               <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-4xl font-display font-bold">{p.price_mt}</span>
+                <span className="text-3xl font-display font-bold">{p.price_mt}</span>
                 <span className="text-muted-foreground">MT</span>
               </div>
-              <div className="text-sm text-muted-foreground">
-                {p.credits} gerações · {p.duration_days} {p.duration_days === 1 ? "dia" : "dias"}
-              </div>
 
-              <ul className="mt-5 space-y-2 text-sm">
+              <ul className="mt-4 space-y-1.5 text-xs">
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="size-4 text-neon" /> {p.allowed_styles.length} estilos visuais
+                  <CheckCircle2 className="size-3.5 text-neon" /> Sem expiração
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="size-4 text-neon" /> Boost incluído
+                  <CheckCircle2 className="size-3.5 text-neon" /> Todos os estilos
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="size-4 text-neon" /> Suporte WhatsApp
+                  <CheckCircle2 className="size-3.5 text-neon" /> Auto Boost incluído
                 </li>
               </ul>
 
               <Button
-                onClick={() => requestPlan(p)}
+                onClick={() => requestPackage(p)}
                 disabled={requesting === p.id}
-                className="w-full mt-6 bg-gradient-neon text-neon-foreground"
+                className="w-full mt-5 bg-gradient-neon text-neon-foreground"
+                size="sm"
               >
                 <MessageCircle className="size-4 mr-2" />
-                {requesting === p.id ? "Enviando..." : "Solicitar via WhatsApp"}
+                {requesting === p.id ? "Enviando..." : "Comprar"}
               </Button>
             </div>
           );
@@ -119,9 +122,9 @@ function PlansPage() {
       <div className="rounded-2xl border border-border bg-gradient-card p-5 text-sm">
         <p className="font-semibold mb-1">Como funciona o pagamento?</p>
         <ol className="list-decimal list-inside text-muted-foreground space-y-1">
-          <li>Clique em "Solicitar via WhatsApp" do plano desejado.</li>
+          <li>Clique em "Comprar" no pacote desejado.</li>
           <li>Faça o pagamento via M-Pesa ou e-Mola e envie o comprovativo no WhatsApp.</li>
-          <li>Após confirmação pelo administrador, seus créditos são liberados automaticamente.</li>
+          <li>Após confirmação pelo administrador, os créditos são liberados automaticamente — sem expiração.</li>
         </ol>
       </div>
     </div>

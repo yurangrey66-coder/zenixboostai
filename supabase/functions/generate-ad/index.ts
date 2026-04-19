@@ -15,6 +15,11 @@ const stylePrompts: Record<string, string> = {
   "4k_ultra": "ultra realistic 4K photography, photorealistic, sharp details, professional camera, NOT cartoon",
 };
 
+const langInstruction = (lang: string) =>
+  lang === "en"
+    ? "All visible text in the image (headline, slogan, call-to-action) MUST be written in correct, natural English. No spelling errors. Marketing tone."
+    : "Todo o texto visível na imagem (título, slogan, chamada para ação) DEVE estar em Português de Portugal (PT-PT) correto, sem erros ortográficos, com tom de marketing profissional. NUNCA usar Português do Brasil.";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -33,28 +38,23 @@ Deno.serve(async (req) => {
     const { data: { user } } = await userClient.auth.getUser();
     if (!user) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-    const { title, description, style } = await req.json();
+    const { title, description, style, language } = await req.json();
+    const lang = language === "en" ? "en" : "pt";
 
-    // Check profile + plan + style allowed
     const { data: profile } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
     if (!profile || profile.status === "blocked") {
-      return new Response(JSON.stringify({ error: "Conta bloqueada ou sem plano" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ error: "Conta bloqueada" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     if (profile.credits < 2) {
       return new Response(JSON.stringify({ error: "Créditos insuficientes" }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    }
-
-    const { data: plan } = await supabase.from("plans").select("allowed_styles").eq("id", profile.current_plan).single();
-    if (!plan?.allowed_styles?.includes(style)) {
-      return new Response(JSON.stringify({ error: "Estilo bloqueado para seu plano" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // Consume 1 credit for ad creation
     const { data: ok1 } = await supabase.rpc("consume_credit", { _user_id: user.id, _reason: "Criar anúncio" });
     if (!ok1) return new Response(JSON.stringify({ error: "Sem créditos" }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-    // Generate image via Lovable AI
-    const prompt = `${stylePrompts[style] ?? ""}. ${title}. ${description ?? ""}`.trim();
+    const prompt = `${stylePrompts[style] ?? ""}. ${title}. ${description ?? ""}. ${langInstruction(lang)}`.trim();
+
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -79,15 +79,14 @@ Deno.serve(async (req) => {
     const aiData = await aiRes.json();
     const imageUrl = aiData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
 
-    // Consume 1 more credit for generation
     await supabase.rpc("consume_credit", { _user_id: user.id, _reason: "Geração de imagem" });
 
-    // Save ad
     const { data: ad, error: adError } = await supabase.from("ads").insert({
       user_id: user.id,
       title, description, style,
       image_url: imageUrl,
       prompt,
+      language: lang,
     }).select().single();
 
     if (adError) return new Response(JSON.stringify({ error: adError.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
