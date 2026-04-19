@@ -82,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    sessionStorage.removeItem("zenix_admin_unlock");
     await supabase.auth.signOut();
     window.location.href = "/auth";
   };
