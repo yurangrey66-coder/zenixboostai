@@ -53,10 +53,11 @@ function AuthPage() {
     if (email.trim().toLowerCase() === ADMIN_EMAIL) {
       sessionStorage.setItem("zenix_admin_unlock", "1");
       toast.success("Painel executivo desbloqueado");
-      navigate({ to: "/admin" });
+      // Hard redirect garante que o beforeLoad lê o sessionStorage já gravado
+      window.location.href = "/admin";
     } else {
       toast.success("Bem-vindo de volta!");
-      navigate({ to: "/app" });
+      window.location.href = "/app";
     }
   };
 
