@@ -3,10 +3,16 @@ import { useAuth } from "@/hooks/use-auth";
 import { AppShell } from "@/components/layout/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 
+const ADMIN_EMAIL = "yurangrey66@gmail.com";
+
 export const Route = createFileRoute("/app")({
   beforeLoad: async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/auth" });
+    // Admin não pode entrar no app de usuário
+    if (session.user.email === ADMIN_EMAIL) {
+      throw redirect({ to: "/admin" });
+    }
   },
   component: AppLayout,
 });

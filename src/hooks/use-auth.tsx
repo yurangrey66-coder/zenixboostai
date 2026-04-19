@@ -63,11 +63,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
+  // Realtime: atualiza perfil quando admin altera créditos/status
+  useEffect(() => {
+    if (!user) return;
+    const ch = supabase
+      .channel(`profile-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "profiles", filter: `user_id=eq.${user.id}` },
+        (payload) => setProfile(payload.new as Profile)
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [user]);
+
   const refreshProfile = async () => {
     if (user) await loadProfile(user.id);
   };
 
   const signOut = async () => {
+    sessionStorage.removeItem("zenix_admin_unlock");
     await supabase.auth.signOut();
     window.location.href = "/auth";
   };

@@ -22,6 +22,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_boosted: boolean
+          language: string
           prompt: string | null
           status: Database["public"]["Enums"]["ad_status"]
           style: Database["public"]["Enums"]["ad_style"]
@@ -37,6 +38,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_boosted?: boolean
+          language?: string
           prompt?: string | null
           status?: Database["public"]["Enums"]["ad_status"]
           style: Database["public"]["Enums"]["ad_style"]
@@ -52,6 +54,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_boosted?: boolean
+          language?: string
           prompt?: string | null
           status?: Database["public"]["Enums"]["ad_status"]
           style?: Database["public"]["Enums"]["ad_style"]
@@ -68,6 +71,7 @@ export type Database = {
           created_at: string
           enabled: boolean
           id: string
+          language: string
           last_run_at: string | null
           preferred_style: Database["public"]["Enums"]["ad_style"]
           total_generated: number
@@ -79,6 +83,7 @@ export type Database = {
           created_at?: string
           enabled?: boolean
           id?: string
+          language?: string
           last_run_at?: string | null
           preferred_style?: Database["public"]["Enums"]["ad_style"]
           total_generated?: number
@@ -90,11 +95,45 @@ export type Database = {
           created_at?: string
           enabled?: boolean
           id?: string
+          language?: string
           last_run_at?: string | null
           preferred_style?: Database["public"]["Enums"]["ad_style"]
           total_generated?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      credit_packages: {
+        Row: {
+          active: boolean
+          bonus_credits: number
+          created_at: string
+          credits: number
+          id: string
+          name: string
+          price_mt: number
+          sort_order: number
+        }
+        Insert: {
+          active?: boolean
+          bonus_credits?: number
+          created_at?: string
+          credits: number
+          id: string
+          name: string
+          price_mt: number
+          sort_order?: number
+        }
+        Update: {
+          active?: boolean
+          bonus_credits?: number
+          created_at?: string
+          credits?: number
+          id?: string
+          name?: string
+          price_mt?: number
+          sort_order?: number
         }
         Relationships: []
       }
@@ -142,7 +181,8 @@ export type Database = {
           id: string
           method: string
           notes: string | null
-          plan_id: Database["public"]["Enums"]["plan_type"]
+          package_id: string | null
+          plan_id: Database["public"]["Enums"]["plan_type"] | null
           reference: string | null
           status: Database["public"]["Enums"]["payment_status"]
           user_id: string
@@ -155,7 +195,8 @@ export type Database = {
           id?: string
           method?: string
           notes?: string | null
-          plan_id: Database["public"]["Enums"]["plan_type"]
+          package_id?: string | null
+          plan_id?: Database["public"]["Enums"]["plan_type"] | null
           reference?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           user_id: string
@@ -168,12 +209,20 @@ export type Database = {
           id?: string
           method?: string
           notes?: string | null
-          plan_id?: Database["public"]["Enums"]["plan_type"]
+          package_id?: string | null
+          plan_id?: Database["public"]["Enums"]["plan_type"] | null
           reference?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "payments_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "credit_packages"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "payments_plan_id_fkey"
             columns: ["plan_id"]
@@ -284,6 +333,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_adjust_credits: {
+        Args: { _delta: number; _reason: string; _user_id: string }
+        Returns: undefined
+      }
+      admin_reset_hard: { Args: never; Returns: undefined }
+      admin_set_user_status: {
+        Args: {
+          _status: Database["public"]["Enums"]["user_status"]
+          _user_id: string
+        }
+        Returns: undefined
+      }
       approve_payment: { Args: { _payment_id: string }; Returns: undefined }
       auto_refresh_all_statuses: { Args: never; Returns: undefined }
       consume_credit: {

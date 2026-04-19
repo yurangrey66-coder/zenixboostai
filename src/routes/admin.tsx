@@ -3,12 +3,19 @@ import { useAuth } from "@/hooks/use-auth";
 import { AppShell } from "@/components/layout/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 
+const ADMIN_EMAIL = "yurangrey66@gmail.com";
+
 export const Route = createFileRoute("/admin")({
   beforeLoad: async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/auth" });
-    if (session.user.email !== "yurangrey66@gmail.com") {
+    if (session.user.email !== ADMIN_EMAIL) {
       throw redirect({ to: "/app" });
+    }
+    // Exige passagem pelo código no /auth (sessionStorage)
+    if (typeof window !== "undefined" && sessionStorage.getItem("zenix_admin_unlock") !== "1") {
+      await supabase.auth.signOut();
+      throw redirect({ to: "/auth" });
     }
     const { data: roles } = await supabase
       .from("user_roles")

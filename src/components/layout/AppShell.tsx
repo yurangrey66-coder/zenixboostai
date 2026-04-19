@@ -84,15 +84,7 @@ export function AppShell({ children, mode = "user" }: { children: ReactNode; mod
               Painel Admin
             </Link>
           )}
-          {mode === "admin" && (
-            <Link
-              to="/app"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neon hover:bg-accent mt-4"
-            >
-              <LayoutDashboard className="size-4" />
-              App do Usuário
-            </Link>
-          )}
+          {/* Admin não entra no app de usuário */}
         </nav>
 
         <div className="p-3 border-t border-sidebar-border space-y-2">
@@ -119,12 +111,20 @@ export function AppShell({ children, mode = "user" }: { children: ReactNode; mod
             </div>
 
             <div className="flex items-center gap-3 ml-auto">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent border border-neon glow-neon-sm">
-                <Sparkles className="size-4 text-neon" />
-                <span className="text-sm font-medium">
-                  Saldo: <span className="font-display font-bold text-neon">{profile?.credits ?? 0}</span> gerações
-                </span>
-              </div>
+              {mode === "user" && (
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent border border-neon glow-neon-sm">
+                  <Sparkles className="size-4 text-neon" />
+                  <span className="text-sm font-medium">
+                    Saldo: <span className="font-display font-bold text-neon">{profile?.credits ?? 0}</span> créditos
+                  </span>
+                </div>
+              )}
+              {mode === "admin" && (
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent border border-neon glow-neon-sm">
+                  <Shield className="size-4 text-neon" />
+                  <span className="text-sm font-medium text-neon">PAINEL EXECUTIVO</span>
+                </div>
+              )}
             </div>
           </div>
         </header>

@@ -5,8 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Zap } from "lucide-react";
+import { Zap, Shield } from "lucide-react";
 import { toast } from "sonner";
+
+const ADMIN_EMAIL = "yurangrey66@gmail.com";
+const ADMIN_CODE = "1417600";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -19,22 +22,52 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [needsCode, setNeedsCode] = useState(false);
+  const [adminCode, setAdminCode] = useState("");
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
+    // Se for o email admin, pedir código antes de autenticar
+    if (email.trim().toLowerCase() === ADMIN_EMAIL) {
+      if (!needsCode) {
+        setNeedsCode(true);
+        setLoading(false);
+        return;
+      }
+      if (adminCode.trim() !== ADMIN_CODE) {
+        toast.error("Código de administrador inválido");
+        setLoading(false);
+        return;
+      }
+    }
+
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
       toast.error("Erro ao entrar", { description: error.message });
       return;
     }
-    toast.success("Bem-vindo de volta!");
-    navigate({ to: "/app" });
+
+    if (email.trim().toLowerCase() === ADMIN_EMAIL) {
+      sessionStorage.setItem("zenix_admin_unlock", "1");
+      toast.success("Painel executivo desbloqueado");
+      navigate({ to: "/admin" });
+    } else {
+      toast.success("Bem-vindo de volta!");
+      navigate({ to: "/app" });
+    }
   };
 
   const handleSignup = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (email.trim().toLowerCase() === ADMIN_EMAIL) {
+      toast.error("Este e-mail é reservado ao painel executivo");
+      return;
+    }
+
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
@@ -49,7 +82,7 @@ function AuthPage() {
       toast.error("Erro ao criar conta", { description: error.message });
       return;
     }
-    toast.success("Conta criada!", { description: "Você já pode entrar." });
+    toast.success("Conta criada! 2 créditos grátis adicionados 🎁");
     navigate({ to: "/app" });
   };
 
@@ -67,7 +100,7 @@ function AuthPage() {
         </a>
 
         <div className="rounded-2xl border border-border bg-gradient-card p-6">
-          <Tabs defaultValue="login">
+          <Tabs defaultValue="login" onValueChange={() => { setNeedsCode(false); setAdminCode(""); }}>
             <TabsList className="grid grid-cols-2 mb-6">
               <TabsTrigger value="login">Entrar</TabsTrigger>
               <TabsTrigger value="signup">Criar conta</TabsTrigger>
@@ -77,14 +110,34 @@ function AuthPage() {
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="login-email">Email</Label>
-                  <Input id="login-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <Input
+                    id="login-email" type="email" required value={email}
+                    onChange={(e) => { setEmail(e.target.value); setNeedsCode(false); setAdminCode(""); }}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="login-pass">Senha</Label>
                   <Input id="login-pass" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
+
+                {needsCode && (
+                  <div className="space-y-2 rounded-xl border border-neon bg-accent/40 p-3 glow-neon-sm">
+                    <Label htmlFor="admin-code" className="flex items-center gap-2 text-neon">
+                      <Shield className="size-4" /> Código de administrador
+                    </Label>
+                    <Input
+                      id="admin-code" type="password" inputMode="numeric" required
+                      placeholder="Digite o código" value={adminCode}
+                      onChange={(e) => setAdminCode(e.target.value)}
+                    />
+                    <p className="text-[11px] text-muted-foreground">
+                      Detectámos um e-mail administrativo. O código é exigido para abrir o painel executivo.
+                    </p>
+                  </div>
+                )}
+
                 <Button type="submit" disabled={loading} className="w-full bg-gradient-neon text-neon-foreground">
-                  {loading ? "Entrando..." : "Entrar"}
+                  {loading ? "Entrando..." : needsCode ? "Abrir painel executivo" : "Entrar"}
                 </Button>
               </form>
             </TabsContent>
@@ -106,6 +159,9 @@ function AuthPage() {
                 <div className="space-y-2">
                   <Label htmlFor="su-pass">Senha</Label>
                   <Input id="su-pass" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                </div>
+                <div className="rounded-lg bg-accent/40 border border-neon/40 p-2 text-xs text-center">
+                  🎁 Ganhe <span className="text-neon font-bold">2 créditos grátis</span> ao criar conta
                 </div>
                 <Button type="submit" disabled={loading} className="w-full bg-gradient-neon text-neon-foreground">
                   {loading ? "Criando..." : "Criar conta"}

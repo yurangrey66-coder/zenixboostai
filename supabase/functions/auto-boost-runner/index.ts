@@ -15,6 +15,11 @@ const stylePrompts: Record<string, string> = {
   "4k_ultra": "ultra realistic 4K photography, photorealistic, sharp",
 };
 
+const langInstruction = (lang: string) =>
+  lang === "en"
+    ? "All visible text in the image MUST be in correct natural English."
+    : "Todo o texto visível DEVE estar em Português de Portugal (PT-PT), sem erros, marketing profissional.";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -24,40 +29,34 @@ Deno.serve(async (req) => {
   );
 
   try {
-    // Refresh status global antes
     await supabase.rpc("auto_refresh_all_statuses");
 
-    // Buscar candidatos: auto_boost ON + perfil elegível
     const { data: candidates } = await supabase
       .from("auto_boost_settings")
-      .select("user_id, preferred_style, base_theme, total_generated, last_run_at, profiles!inner(status, credits, current_plan)")
+      .select("user_id, preferred_style, base_theme, language, total_generated, last_run_at, profiles!inner(status, credits)")
       .eq("enabled", true);
 
     const eligible = (candidates ?? []).filter((c: any) =>
-      (c.profiles.status === "active" || c.profiles.status === "expiring") &&
-      c.profiles.credits >= 2
+      c.profiles.status !== "blocked" && c.profiles.credits >= 2
     );
 
     const results: any[] = [];
     for (const c of eligible) {
       try {
-        // Verificar estilo permitido pelo plano
-        const { data: plan } = await supabase
-          .from("plans").select("allowed_styles")
-          .eq("id", c.profiles.current_plan).single();
-        const style = plan?.allowed_styles?.includes(c.preferred_style)
-          ? c.preferred_style
-          : (plan?.allowed_styles?.[0] ?? "classic");
+        const style = c.preferred_style ?? "promotional";
+        const lang = c.language === "en" ? "en" : "pt";
 
-        // Consumir 1 crédito (criação)
         const { data: ok1 } = await supabase.rpc("consume_credit", {
           _user_id: c.user_id, _reason: "AUTO BOOST: criar anúncio",
         });
         if (!ok1) continue;
 
-        const variation = ["Oferta especial", "Promoção exclusiva", "Lançamento", "Edição limitada", "Imperdível"][c.total_generated % 5];
+        const variations = lang === "en"
+          ? ["Special offer", "Exclusive deal", "New launch", "Limited edition", "Don't miss"]
+          : ["Oferta especial", "Promoção exclusiva", "Lançamento", "Edição limitada", "Imperdível"];
+        const variation = variations[c.total_generated % 5];
         const title = `${variation} — ${c.base_theme}`;
-        const prompt = `${stylePrompts[style] ?? ""}. ${title}. ${c.base_theme}`.trim();
+        const prompt = `${stylePrompts[style] ?? ""}. ${title}. ${c.base_theme}. ${langInstruction(lang)}`.trim();
 
         const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
@@ -76,12 +75,11 @@ Deno.serve(async (req) => {
         const aiData = await aiRes.json();
         const imageUrl = aiData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
 
-        // Consumir 1 crédito (geração)
         await supabase.rpc("consume_credit", { _user_id: c.user_id, _reason: "AUTO BOOST: geração IA" });
 
         await supabase.from("ads").insert({
           user_id: c.user_id, title, description: c.base_theme, style,
-          image_url: imageUrl, prompt, is_boosted: true,
+          image_url: imageUrl, prompt, is_boosted: true, language: lang,
           boost_expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
         });
 
