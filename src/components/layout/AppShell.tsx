@@ -1,7 +1,15 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { Zap, LayoutDashboard, Megaphone, CreditCard, Settings, LogOut, Shield, Sparkles, Bot } from "lucide-react";
+import { Zap, LayoutDashboard, Megaphone, CreditCard, Settings, LogOut, Shield, Sparkles, Bot, Menu, User, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
