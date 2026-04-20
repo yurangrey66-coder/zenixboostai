@@ -26,12 +26,23 @@ function AuthPage() {
   const [needsCode, setNeedsCode] = useState(false);
   const [adminCode, setAdminCode] = useState("");
 
+  // Normaliza email: remove espaços e converte para minúsculas (evita "JOAO@x.com" != "joao@x.com")
+  const normalizeEmail = (raw: string) => raw.trim().toLowerCase().replace(/\s+/g, "");
+
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
+    const cleanEmail = normalizeEmail(email);
+    const cleanPassword = password; // senha NÃO é normalizada (espaços contam)
+
+    if (!cleanEmail || !cleanPassword) {
+      toast.error("Preencha email e senha");
+      return;
+    }
+
     setLoading(true);
 
     // Se for o email admin, pedir código antes de autenticar
-    if (email.trim().toLowerCase() === ADMIN_EMAIL) {
+    if (cleanEmail === ADMIN_EMAIL) {
       if (!needsCode) {
         setNeedsCode(true);
         setLoading(false);
@@ -44,17 +55,28 @@ function AuthPage() {
       }
     }
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password: cleanPassword,
+    });
     setLoading(false);
     if (error) {
-      toast.error("Erro ao entrar", { description: error.message });
+      const msg = error.message.toLowerCase();
+      if (msg.includes("invalid login") || msg.includes("invalid_credentials")) {
+        toast.error("Email ou senha incorretos", {
+          description: "Verifique se digitou corretamente. Se esqueceu a senha, clique em 'Esqueci a senha'.",
+        });
+      } else if (msg.includes("email not confirmed")) {
+        toast.error("Email ainda não confirmado", { description: "Verifique sua caixa de entrada." });
+      } else {
+        toast.error("Erro ao entrar", { description: error.message });
+      }
       return;
     }
 
-    if (email.trim().toLowerCase() === ADMIN_EMAIL) {
+    if (cleanEmail === ADMIN_EMAIL) {
       sessionStorage.setItem("zenix_admin_unlock", "1");
       toast.success("Painel executivo desbloqueado");
-      // Hard redirect garante que o beforeLoad lê o sessionStorage já gravado
       window.location.href = "/admin";
     } else {
       toast.success("Bem-vindo de volta!");
@@ -64,28 +86,64 @@ function AuthPage() {
 
   const handleSignup = async (e: FormEvent) => {
     e.preventDefault();
+    const cleanEmail = normalizeEmail(email);
+    const cleanPassword = password;
 
-    if (email.trim().toLowerCase() === ADMIN_EMAIL) {
+    if (cleanEmail === ADMIN_EMAIL) {
       toast.error("Este e-mail é reservado ao painel executivo");
+      return;
+    }
+
+    if (cleanPassword.length < 6) {
+      toast.error("Senha muito curta", { description: "Use pelo menos 6 caracteres." });
       return;
     }
 
     setLoading(true);
     const { error } = await supabase.auth.signUp({
-      email,
-      password,
+      email: cleanEmail,
+      password: cleanPassword,
       options: {
         emailRedirectTo: `${window.location.origin}/app`,
-        data: { full_name: fullName, phone },
+        data: { full_name: fullName.trim(), phone: phone.trim() },
       },
     });
     setLoading(false);
     if (error) {
-      toast.error("Erro ao criar conta", { description: error.message });
+      const msg = error.message.toLowerCase();
+      if (msg.includes("already registered") || msg.includes("already been registered") || msg.includes("user already")) {
+        toast.error("Este email já tem conta", {
+          description: "Tente entrar ou recuperar a senha.",
+        });
+      } else if (msg.includes("password")) {
+        toast.error("Senha inválida", { description: error.message });
+      } else {
+        toast.error("Erro ao criar conta", { description: error.message });
+      }
       return;
     }
     toast.success("Conta criada! 2 créditos grátis adicionados 🎁");
-    navigate({ to: "/app" });
+    window.location.href = "/app";
+  };
+
+  const handleForgotPassword = async () => {
+    const cleanEmail = normalizeEmail(email);
+    if (!cleanEmail) {
+      toast.error("Digite seu email primeiro no campo acima");
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+    setLoading(false);
+    if (error) {
+      toast.error("Não foi possível enviar", { description: error.message });
+      return;
+    }
+    toast.success("Link de recuperação enviado!", {
+      description: `Verifique a caixa de entrada de ${cleanEmail}.`,
+    });
   };
 
   return (
@@ -139,6 +197,15 @@ function AuthPage() {
                 <Button type="submit" disabled={loading} className="w-full bg-gradient-neon text-neon-foreground">
                   {loading ? "Entrando..." : needsCode ? "Abrir painel executivo" : "Entrar"}
                 </Button>
+
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={loading}
+                  className="w-full text-xs text-muted-foreground hover:text-neon transition-colors text-center underline-offset-4 hover:underline"
+                >
+                  Esqueci a senha — receber link no email
+                </button>
               </form>
             </TabsContent>
 
