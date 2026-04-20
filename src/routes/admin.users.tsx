@@ -8,7 +8,11 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Plus, Minus, Lock, Unlock, Pencil } from "lucide-react";
+import { Plus, Minus, Lock, Unlock, Pencil, Trash2 } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/admin/users")({
   component: AdminUsers,
@@ -63,6 +67,17 @@ function AdminUsers() {
     });
     if (error) toast.error(error.message);
     else toast.success(status === "blocked" ? "Usuário bloqueado" : "Usuário desbloqueado");
+  };
+
+  const deleteUser = async (user_id: string, name: string) => {
+    const { error } = await supabase.functions.invoke("admin-delete-user", {
+      body: { user_id },
+    });
+    if (error) return toast.error("Falha ao apagar conta", { description: error.message });
+    toast.success(`Conta de ${name || "usuário"} apagada`, {
+      description: "O email pode ser usado novamente para novo cadastro",
+    });
+    setRows((rs) => rs.filter((r) => r.user_id !== user_id));
   };
 
   const filtered = rows.filter((r) =>
