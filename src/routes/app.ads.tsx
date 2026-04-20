@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Eye, Rocket, Trash2 } from "lucide-react";
+import { Megaphone, Eye, Rocket, Trash2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
@@ -59,6 +59,29 @@ function MyAds() {
     if (!confirm("Remover este anúncio?")) return;
     await supabase.from("ads").delete().eq("id", id);
     setAds((a) => a.filter((ad) => ad.id !== id));
+  };
+
+  const download = async (ad: Ad) => {
+    if (!ad.image_url) {
+      toast.error("Este anúncio não tem imagem para baixar");
+      return;
+    }
+    try {
+      const res = await fetch(ad.image_url);
+      const blob = await res.blob();
+      const ext = (blob.type.split("/")[1] ?? "png").split(";")[0];
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${ad.title.replace(/[^a-z0-9]+/gi, "_").toLowerCase() || "anuncio"}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success("Download iniciado");
+    } catch {
+      toast.error("Falha ao baixar imagem");
+    }
   };
 
   return (
@@ -119,6 +142,15 @@ function MyAds() {
                       onClick={() => boost(ad.id)}
                     >
                       <Rocket className="size-3.5 mr-1.5" /> Boost
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => download(ad)}
+                      disabled={!ad.image_url}
+                      title="Baixar anúncio"
+                    >
+                      <Download className="size-3.5" />
                     </Button>
                     <Button size="sm" variant="ghost" onClick={() => remove(ad.id)}>
                       <Trash2 className="size-3.5" />
