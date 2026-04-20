@@ -133,6 +133,8 @@ export function AppShell({ children, mode = "user" }: { children: ReactNode; mod
                 </div>
               )}
 
+              {mode === "user" && <NotificationsBell />}
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" aria-label="Menu da conta">
