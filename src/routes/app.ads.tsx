@@ -143,6 +143,15 @@ function MyAds() {
                     >
                       <Rocket className="size-3.5 mr-1.5" /> Boost
                     </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => download(ad)}
+                      disabled={!ad.image_url}
+                      title="Baixar anúncio"
+                    >
+                      <Download className="size-3.5" />
+                    </Button>
                     <Button size="sm" variant="ghost" onClick={() => remove(ad.id)}>
                       <Trash2 className="size-3.5" />
                     </Button>
