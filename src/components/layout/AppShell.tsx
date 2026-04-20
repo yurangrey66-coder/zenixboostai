@@ -1,7 +1,15 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { Zap, LayoutDashboard, Megaphone, CreditCard, Settings, LogOut, Shield, Sparkles, Bot } from "lucide-react";
+import { Zap, LayoutDashboard, Megaphone, CreditCard, Settings, LogOut, Shield, Sparkles, Bot, Menu, User, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -125,6 +133,44 @@ export function AppShell({ children, mode = "user" }: { children: ReactNode; mod
                   <span className="text-sm font-medium text-neon">PAINEL EXECUTIVO</span>
                 </div>
               )}
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" aria-label="Menu da conta">
+                    <Menu className="size-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel className="truncate">{user?.email ?? "Conta"}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/app/account" className="flex items-center gap-2 cursor-pointer">
+                      <User className="size-4" /> Editar conta
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/app/account" className="flex items-center gap-2 cursor-pointer">
+                      <Settings className="size-4" /> Configurações
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/app/account" className="flex items-center gap-2 cursor-pointer">
+                      <KeyRound className="size-4" /> Esqueci a senha
+                    </Link>
+                  </DropdownMenuItem>
+                  {isAdmin && user?.email === "yurangrey66@gmail.com" && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="flex items-center gap-2 cursor-pointer text-neon">
+                        <Shield className="size-4" /> Painel executivo
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
+                    <LogOut className="size-4 mr-2" /> Sair da conta
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </header>
