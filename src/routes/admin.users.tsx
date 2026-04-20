@@ -144,6 +144,31 @@ function AdminUsers() {
                           <Lock className="size-3.5 text-destructive" />
                         </Button>
                       )}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button size="icon" variant="ghost" title="Apagar conta">
+                            <Trash2 className="size-3.5 text-destructive" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Apagar conta de {r.full_name || r.phone || "usuário"}?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Todos os dados (anúncios, pagamentos, créditos, histórico) serão apagados permanentemente.
+                              O email ficará liberado para um novo cadastro. Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => deleteUser(r.user_id, r.full_name || r.phone || "")}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Apagar permanentemente
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </td>
                 </tr>
