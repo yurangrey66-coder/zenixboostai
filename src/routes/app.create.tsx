@@ -1,12 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Lock, Sparkles } from "lucide-react";
+import { Lock, Sparkles, Upload, X, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { AD_STYLES, AD_LANGUAGES, buildWhatsAppUrl } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,8 @@ export const Route = createFileRoute("/app/create")({
   component: CreateAd,
 });
 
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
+
 function CreateAd() {
   const { profile, user, refreshProfile } = useAuth();
   const navigate = useNavigate();
@@ -24,8 +26,33 @@ function CreateAd() {
   const [style, setStyle] = useState<string>("classic");
   const [language, setLanguage] = useState<"pt" | "en">("pt");
   const [loading, setLoading] = useState(false);
+  const [referenceImage, setReferenceImage] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const blocked = !profile || profile.status === "blocked" || profile.credits < 2;
+
+  const handleFile = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Apenas imagens são aceites");
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      toast.error("Imagem muito grande", { description: "Máximo 5 MB" });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setReferenceImage(reader.result as string);
+    reader.onerror = () => toast.error("Falha ao ler a imagem");
+    reader.readAsDataURL(file);
+  };
+
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFile(file);
+  };
 
   const generate = async () => {
     if (!user) return;
@@ -34,7 +61,7 @@ function CreateAd() {
 
     setLoading(true);
     const { data, error } = await supabase.functions.invoke("generate-ad", {
-      body: { title, description, style, language },
+      body: { title, description, style, language, referenceImage },
     });
     setLoading(false);
 
@@ -87,6 +114,57 @@ function CreateAd() {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Descreva o produto e o estilo visual desejado..."
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2">
+            <ImageIcon className="size-4" /> Imagem de referência (opcional)
+          </Label>
+          <p className="text-[11px] text-muted-foreground">
+            Envie uma foto do produto e a IA criará o anúncio baseado nela.
+          </p>
+
+          {referenceImage ? (
+            <div className="relative rounded-xl border border-border overflow-hidden">
+              <img src={referenceImage} alt="Referência" className="w-full max-h-64 object-contain bg-card" />
+              <button
+                type="button"
+                onClick={() => setReferenceImage(null)}
+                className="absolute top-2 right-2 rounded-full bg-background/90 p-1.5 hover:bg-destructive hover:text-destructive-foreground transition"
+                aria-label="Remover imagem"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          ) : (
+            <div
+              onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+              onDragLeave={() => setDragActive(false)}
+              onDrop={onDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={cn(
+                "rounded-xl border-2 border-dashed p-6 text-center cursor-pointer transition",
+                dragActive
+                  ? "border-neon bg-accent glow-neon-sm"
+                  : "border-border bg-card hover:border-neon/50"
+              )}
+            >
+              <Upload className="size-8 mx-auto text-muted-foreground mb-2" />
+              <p className="text-sm font-medium">Arraste uma foto aqui</p>
+              <p className="text-xs text-muted-foreground mt-1">ou clique para selecionar (máx. 5 MB)</p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleFile(file);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">

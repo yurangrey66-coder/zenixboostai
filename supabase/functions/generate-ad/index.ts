@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
     const { data: { user } } = await userClient.auth.getUser();
     if (!user) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-    const { title, description, style, language } = await req.json();
+    const { title, description, style, language, referenceImage } = await req.json();
     const lang = language === "en" ? "en" : "pt";
 
     const { data: profile } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
@@ -53,7 +53,17 @@ Deno.serve(async (req) => {
     const { data: ok1 } = await supabase.rpc("consume_credit", { _user_id: user.id, _reason: "Criar anúncio" });
     if (!ok1) return new Response(JSON.stringify({ error: "Sem créditos" }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-    const prompt = `${stylePrompts[style] ?? ""}. ${title}. ${description ?? ""}. ${langInstruction(lang)}`.trim();
+    const basePrompt = `${stylePrompts[style] ?? ""}. ${title}. ${description ?? ""}. ${langInstruction(lang)}`.trim();
+
+    const userContent = referenceImage
+      ? [
+          {
+            type: "text",
+            text: `Use the provided image as the main product/subject reference. Create a professional advertisement based on this product. ${basePrompt}`,
+          },
+          { type: "image_url", image_url: { url: referenceImage } },
+        ]
+      : `Generate advertisement image: ${basePrompt}`;
 
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -63,7 +73,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash-image",
-        messages: [{ role: "user", content: `Generate advertisement image: ${prompt}` }],
+        messages: [{ role: "user", content: userContent }],
         modalities: ["image", "text"],
       }),
     });
@@ -85,7 +95,7 @@ Deno.serve(async (req) => {
       user_id: user.id,
       title, description, style,
       image_url: imageUrl,
-      prompt,
+      prompt: basePrompt,
       language: lang,
     }).select().single();
 
