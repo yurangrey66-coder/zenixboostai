@@ -23,6 +23,7 @@ import { Route as AppAccountRouteImport } from './routes/app.account'
 import { Route as AdminZenixAiRouteImport } from './routes/admin.zenix-ai'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminPromotionsRouteImport } from './routes/admin.promotions'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 
@@ -96,6 +97,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPromotionsRoute = AdminPromotionsRouteImport.update({
+  id: '/promotions',
+  path: '/promotions',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
   id: '/payments',
   path: '/payments',
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/payments': typeof AdminPaymentsRoute
+  '/admin/promotions': typeof AdminPromotionsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/zenix-ai': typeof AdminZenixAiRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/payments': typeof AdminPaymentsRoute
+  '/admin/promotions': typeof AdminPromotionsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/zenix-ai': typeof AdminZenixAiRoute
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/payments': typeof AdminPaymentsRoute
+  '/admin/promotions': typeof AdminPromotionsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/zenix-ai': typeof AdminZenixAiRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin/ads'
     | '/admin/payments'
+    | '/admin/promotions'
     | '/admin/settings'
     | '/admin/users'
     | '/admin/zenix-ai'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin/ads'
     | '/admin/payments'
+    | '/admin/promotions'
     | '/admin/settings'
     | '/admin/users'
     | '/admin/zenix-ai'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin/ads'
     | '/admin/payments'
+    | '/admin/promotions'
     | '/admin/settings'
     | '/admin/users'
     | '/admin/zenix-ai'
@@ -322,6 +334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/promotions': {
+      id: '/admin/promotions'
+      path: '/promotions'
+      fullPath: '/admin/promotions'
+      preLoaderRoute: typeof AdminPromotionsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/payments': {
       id: '/admin/payments'
       path: '/payments'
@@ -342,6 +361,7 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminAdsRoute: typeof AdminAdsRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
+  AdminPromotionsRoute: typeof AdminPromotionsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminZenixAiRoute: typeof AdminZenixAiRoute
@@ -351,6 +371,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAdsRoute: AdminAdsRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
+  AdminPromotionsRoute: AdminPromotionsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminZenixAiRoute: AdminZenixAiRoute,
@@ -388,3 +409,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
