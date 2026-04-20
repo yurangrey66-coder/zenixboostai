@@ -7,20 +7,21 @@ const ADMIN_EMAIL = "yurangrey66@gmail.com";
 
 export const Route = createFileRoute("/admin")({
   beforeLoad: async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
     if (!session) throw redirect({ to: "/auth" });
-    if (session.user.email !== ADMIN_EMAIL) {
+    if ((session.user.email ?? "").toLowerCase() !== ADMIN_EMAIL) {
       throw redirect({ to: "/app" });
     }
-    // Exige passagem pelo código no /auth (sessionStorage)
-    if (typeof window !== "undefined" && sessionStorage.getItem("zenix_admin_unlock") !== "1") {
-      throw redirect({ to: "/auth" });
-    }
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", session.user.id);
-    if (!roles?.some((r) => r.role === "admin")) {
+
+    const { data: hasAdminRole, error } = await supabase.rpc("has_role", {
+      _user_id: session.user.id,
+      _role: "admin",
+    });
+
+    if (error || !hasAdminRole) {
       throw redirect({ to: "/app" });
     }
   },
