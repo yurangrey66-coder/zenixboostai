@@ -197,6 +197,15 @@ function AuthPage() {
                 <Button type="submit" disabled={loading} className="w-full bg-gradient-neon text-neon-foreground">
                   {loading ? "Entrando..." : needsCode ? "Abrir painel executivo" : "Entrar"}
                 </Button>
+
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={loading}
+                  className="w-full text-xs text-muted-foreground hover:text-neon transition-colors text-center underline-offset-4 hover:underline"
+                >
+                  Esqueci a senha — receber link no email
+                </button>
               </form>
             </TabsContent>
 
