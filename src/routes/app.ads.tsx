@@ -61,6 +61,29 @@ function MyAds() {
     setAds((a) => a.filter((ad) => ad.id !== id));
   };
 
+  const download = async (ad: Ad) => {
+    if (!ad.image_url) {
+      toast.error("Este anúncio não tem imagem para baixar");
+      return;
+    }
+    try {
+      const res = await fetch(ad.image_url);
+      const blob = await res.blob();
+      const ext = (blob.type.split("/")[1] ?? "png").split(";")[0];
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${ad.title.replace(/[^a-z0-9]+/gi, "_").toLowerCase() || "anuncio"}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success("Download iniciado");
+    } catch {
+      toast.error("Falha ao baixar imagem");
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between">
