@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { Zap, LayoutDashboard, Megaphone, CreditCard, Settings, LogOut, Shield, Sparkles, Bot, Menu, User, KeyRound } from "lucide-react";
+import { LayoutDashboard, Megaphone, CreditCard, Settings, LogOut, Shield, Sparkles, Bot, Menu, User, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,8 +10,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationsBell } from "@/components/NotificationsBell";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
+import zenixLogo from "@/assets/zenix-logo.png";
 
 const userNav = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard },
@@ -26,6 +28,7 @@ const adminNav = [
   { to: "/admin/users", label: "Usuários", icon: Shield },
   { to: "/admin/payments", label: "Pagamentos", icon: CreditCard },
   { to: "/admin/ads", label: "Anúncios", icon: Megaphone },
+  { to: "/admin/promotions", label: "Promoções", icon: Megaphone },
   { to: "/admin/zenix-ai", label: "ZENIX AI", icon: Sparkles },
   { to: "/admin/settings", label: "Configurações", icon: Settings },
 ];
