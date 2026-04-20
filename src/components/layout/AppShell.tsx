@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { Zap, LayoutDashboard, Megaphone, CreditCard, Settings, LogOut, Shield, Sparkles, Bot, Menu, User, KeyRound } from "lucide-react";
+import { LayoutDashboard, Megaphone, CreditCard, Settings, LogOut, Shield, Sparkles, Bot, Menu, User, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,8 +10,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationsBell } from "@/components/NotificationsBell";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
+import zenixLogo from "@/assets/zenix-logo.png";
 
 const userNav = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard },
@@ -26,6 +28,7 @@ const adminNav = [
   { to: "/admin/users", label: "Usuários", icon: Shield },
   { to: "/admin/payments", label: "Pagamentos", icon: CreditCard },
   { to: "/admin/ads", label: "Anúncios", icon: Megaphone },
+  { to: "/admin/promotions", label: "Promoções", icon: Megaphone },
   { to: "/admin/zenix-ai", label: "ZENIX AI", icon: Sparkles },
   { to: "/admin/settings", label: "Configurações", icon: Settings },
 ];
@@ -52,10 +55,8 @@ export function AppShell({ children, mode = "user" }: { children: ReactNode; mod
       {/* Sidebar (desktop) */}
       <aside className="hidden md:flex md:w-64 md:flex-col border-r border-border bg-sidebar">
         <div className="p-6 border-b border-sidebar-border">
-          <Link to="/app" className="flex items-center gap-2">
-            <div className="size-9 rounded-xl bg-gradient-neon grid place-items-center glow-neon-sm">
-              <Zap className="size-5 text-neon-foreground" strokeWidth={2.5} />
-            </div>
+          <Link to="/app" className="flex items-center gap-3">
+            <img src={zenixLogo} alt="ZENIX BOOST" className="size-10 rounded-xl object-cover glow-neon-sm" />
             <div>
               <div className="font-display font-bold text-lg leading-none">ZENIX</div>
               <div className="text-xs text-muted-foreground tracking-widest">BOOST</div>
@@ -112,9 +113,7 @@ export function AppShell({ children, mode = "user" }: { children: ReactNode; mod
         <header className="sticky top-0 z-30 bg-background/85 backdrop-blur border-b border-border">
           <div className="flex items-center justify-between px-4 md:px-6 h-16">
             <div className="md:hidden flex items-center gap-2">
-              <div className="size-8 rounded-lg bg-gradient-neon grid place-items-center">
-                <Zap className="size-4 text-neon-foreground" strokeWidth={2.5} />
-              </div>
+              <img src={zenixLogo} alt="ZENIX BOOST" className="size-8 rounded-lg object-cover" />
               <span className="font-display font-bold">ZENIX</span>
             </div>
 
@@ -133,6 +132,8 @@ export function AppShell({ children, mode = "user" }: { children: ReactNode; mod
                   <span className="text-sm font-medium text-neon">PAINEL EXECUTIVO</span>
                 </div>
               )}
+
+              {mode === "user" && <NotificationsBell />}
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

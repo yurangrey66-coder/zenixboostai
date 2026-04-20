@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Zap, Shield } from "lucide-react";
+import zenixLogo from "@/assets/zenix-logo.png";
 import { toast } from "sonner";
 
 const ADMIN_EMAIL = "yurangrey66@gmail.com";
@@ -90,10 +91,8 @@ function AuthPage() {
   return (
     <div className="min-h-screen grid place-items-center px-4 py-10">
       <div className="w-full max-w-md">
-        <a href="/" className="flex items-center gap-2 justify-center mb-8">
-          <div className="size-10 rounded-xl bg-gradient-neon grid place-items-center glow-neon-sm">
-            <Zap className="size-5 text-neon-foreground" strokeWidth={2.5} />
-          </div>
+        <a href="/" className="flex items-center gap-3 justify-center mb-8">
+          <img src={zenixLogo} alt="ZENIX BOOST" className="size-12 rounded-xl object-cover glow-neon-sm" />
           <div>
             <div className="font-display font-bold text-xl leading-none">ZENIX <span className="text-neon">BOOST</span></div>
             <div className="text-xs text-muted-foreground tracking-widest mt-1">MARKETING COM IA</div>
