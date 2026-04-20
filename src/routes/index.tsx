@@ -2,6 +2,7 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { Zap, Sparkles, Rocket, ShieldCheck, Crown, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buildWhatsAppUrl } from "@/lib/constants";
+import zenixLogo from "@/assets/zenix-logo.png";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -20,9 +21,7 @@ function Landing() {
       <header className="sticky top-0 z-30 backdrop-blur-md bg-background/70 border-b border-border">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="size-9 rounded-xl bg-gradient-neon grid place-items-center glow-neon-sm">
-              <Zap className="size-5 text-neon-foreground" strokeWidth={2.5} />
-            </div>
+            <img src={zenixLogo} alt="ZENIX BOOST" className="size-10 rounded-xl object-cover glow-neon-sm" />
             <span className="font-display font-bold text-lg">ZENIX <span className="text-neon">BOOST</span></span>
           </Link>
           <div className="flex items-center gap-2">
