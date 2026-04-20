@@ -307,6 +307,68 @@ export type Database = {
         }
         Relationships: []
       }
+      promotion_reads: {
+        Row: {
+          id: string
+          promotion_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          promotion_id: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          promotion_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promotion_reads_promotion_id_fkey"
+            columns: ["promotion_id"]
+            isOneToOne: false
+            referencedRelation: "promotions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      promotions: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string
+          id: string
+          link: string | null
+          message: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by: string
+          id?: string
+          link?: string | null
+          message: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string
+          id?: string
+          link?: string | null
+          message?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
