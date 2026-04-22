@@ -1,19 +1,14 @@
 import { useEffect, useState } from "react";
 import logo from "@/assets/zenix-logo.png";
 
-const SPLASH_KEY = "zenix_splash_shown";
 const DURATION_MS = 7000;
 
 export function SplashScreen() {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Show only once per session
-    if (sessionStorage.getItem(SPLASH_KEY)) return;
-    sessionStorage.setItem(SPLASH_KEY, "1");
-    setVisible(true);
 
     const fadeTimer = setTimeout(() => setFadeOut(true), DURATION_MS - 500);
     const hideTimer = setTimeout(() => {
@@ -58,7 +53,7 @@ export function SplashScreen() {
             ZENIX BOOST
           </h1>
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            AI Powered Ads
+            Powered by Banze Intertech
           </p>
         </div>
 

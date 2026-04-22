@@ -10,9 +10,17 @@ const stylePrompts: Record<string, string> = {
   promotional: "vibrant promotional ad, bold colors, marketing banner style, eye-catching",
   nature: "natural outdoor scene, organic, soft natural lighting, earthy tones",
   "3d_realistic": "hyper realistic 3D render, octane render, studio lighting, cinematic",
-  "3d_blur": "realistic 3D render with shallow depth of field, blurred background, bokeh",
+  "3d_blur": "realistic photo with shallow depth of field, blurred background, bokeh, sharp product",
   luxury: "luxury premium aesthetic, gold accents, elegant, high-end product photography",
   "4k_ultra": "ultra realistic 4K photography, photorealistic, sharp details, professional camera, NOT cartoon",
+  "4k_simples": "IMPORTANT: Keep the original background of the reference image EXACTLY as it is — do not replace, blur or modify the background. Only enhance the subject/product to ultra-sharp 4K quality with rich, vivid color saturation, crisp details and clarity. No new scene, no studio backdrop, preserve original surroundings.",
+  minimalist: "minimalist advertisement, clean white or solid background, total focus on the product, lots of negative space, modern Apple-like aesthetic",
+  neon: "vibrant neon lights aesthetic, futuristic cyberpunk vibe, glowing accents in pink, cyan and electric green, dark moody background",
+  vintage: "retro vintage advertisement, sepia and warm tones, film grain texture, old paper, nostalgic 70s/80s aesthetic",
+  pop_art: "pop art comic book style, bold vivid colors, halftone dots, thick outlines, Roy Lichtenstein and Andy Warhol inspired",
+  watercolor: "soft watercolor illustration, artistic brush strokes, gentle pastel washes, hand-painted look, paper texture",
+  flat_design: "flat vector illustration, simple geometric shapes, solid bold colors, no gradients, no shadows, clean modern infographic style",
+  gradient: "modern smooth gradient background, vibrant blended colors (purple, pink, blue, orange), glassmorphism, contemporary design",
 };
 
 const langInstruction = (lang: string) =>
