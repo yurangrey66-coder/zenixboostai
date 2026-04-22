@@ -4,8 +4,18 @@ import { AlertTriangle, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function StatusBanner() {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   if (!profile) return null;
+
+  // Mensagem personalizada com dados do perfil (atualiza automaticamente quando o usuário muda)
+  const nome = profile.full_name?.trim() || "(sem nome)";
+  const telefone = profile.phone?.trim() || "(sem telefone)";
+  const email = user?.email || "(sem email)";
+  const buyMsg =
+    `Olá ZENIX BOOST, quero comprar um pacote de créditos.\n\n` +
+    `👤 Nome: ${nome}\n` +
+    `📧 Email: ${email}\n` +
+    `📱 Telefone: ${telefone}`;
 
   if (profile.status === "blocked") {
     const reason = profile.credits === 0
@@ -23,7 +33,7 @@ export function StatusBanner() {
           </div>
         </div>
         <Button asChild variant="default" size="sm" className="bg-gradient-neon text-neon-foreground">
-          <a href={buildWhatsAppUrl()} target="_blank" rel="noopener">
+          <a href={buildWhatsAppUrl(buyMsg)} target="_blank" rel="noopener">
             <MessageCircle className="size-4 mr-2" /> Comprar créditos
           </a>
         </Button>
@@ -40,7 +50,7 @@ export function StatusBanner() {
           <span className="text-muted-foreground">Recarregue para não parar.</span>
         </div>
         <Button asChild variant="outline" size="sm">
-          <a href={buildWhatsAppUrl()} target="_blank" rel="noopener">Recarregar</a>
+          <a href={buildWhatsAppUrl(buyMsg)} target="_blank" rel="noopener">Recarregar</a>
         </Button>
       </div>
     );
