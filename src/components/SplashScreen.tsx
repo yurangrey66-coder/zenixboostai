@@ -1,18 +1,25 @@
 import { useEffect, useState } from "react";
 import logo from "@/assets/zenix-logo.png";
 
-const DURATION_MS = 7000;
+const DURATION_MS = 2000;
+const STORAGE_KEY = "zenix_splash_shown";
 
 export function SplashScreen() {
-  const [visible, setVisible] = useState(true);
+  // Inicializa já oculto se já foi mostrado nesta sessão (evita re-aparecer após login)
+  const [visible, setVisible] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem(STORAGE_KEY) !== "1";
+  });
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (!visible) return;
 
-    const fadeTimer = setTimeout(() => setFadeOut(true), DURATION_MS - 500);
+    const fadeTimer = setTimeout(() => setFadeOut(true), DURATION_MS - 400);
     const hideTimer = setTimeout(() => {
       setVisible(false);
+      sessionStorage.setItem(STORAGE_KEY, "1");
       playNotificationSound();
     }, DURATION_MS);
 
@@ -20,13 +27,13 @@ export function SplashScreen() {
       clearTimeout(fadeTimer);
       clearTimeout(hideTimer);
     };
-  }, []);
+  }, [visible]);
 
   if (!visible) return null;
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-500 ${
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-400 ${
         fadeOut ? "opacity-0" : "opacity-100"
       }`}
       aria-hidden="true"
@@ -40,7 +47,7 @@ export function SplashScreen() {
       <div className="relative z-10 flex flex-col items-center gap-6">
         <div className="relative">
           {/* Rotating ring */}
-          <div className="absolute inset-0 -m-6 rounded-full border-2 border-primary/30 border-t-primary animate-spin" style={{ animationDuration: "2s" }} />
+          <div className="absolute inset-0 -m-6 rounded-full border-2 border-primary/30 border-t-primary animate-spin" style={{ animationDuration: "1.2s" }} />
           <img
             src={logo}
             alt="ZENIX BOOST"
@@ -48,7 +55,7 @@ export function SplashScreen() {
           />
         </div>
 
-        <div className="flex flex-col items-center gap-2 animate-fade-in" style={{ animationDelay: "0.5s", animationFillMode: "both" }}>
+        <div className="flex flex-col items-center gap-2 animate-fade-in" style={{ animationDelay: "0.2s", animationFillMode: "both" }}>
           <h1 className="font-display text-3xl font-bold tracking-wider text-gradient-neon">
             ZENIX BOOST
           </h1>
@@ -87,11 +94,10 @@ function playNotificationSound() {
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
 
-    // iOS-like "tri-tone" notification: three quick rising tones
     const notes = [
-      { freq: 523.25, start: 0, dur: 0.12 },   // C5
-      { freq: 659.25, start: 0.12, dur: 0.12 }, // E5
-      { freq: 783.99, start: 0.24, dur: 0.22 }, // G5
+      { freq: 523.25, start: 0, dur: 0.12 },
+      { freq: 659.25, start: 0.12, dur: 0.12 },
+      { freq: 783.99, start: 0.24, dur: 0.22 },
     ];
 
     notes.forEach(({ freq, start, dur }) => {
@@ -113,6 +119,6 @@ function playNotificationSound() {
 
     setTimeout(() => ctx.close(), 1000);
   } catch {
-    // silent fail — autoplay may be blocked
+    // silent fail
   }
 }
