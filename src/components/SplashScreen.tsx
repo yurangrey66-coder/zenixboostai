@@ -5,15 +5,19 @@ const DURATION_MS = 2000;
 const STORAGE_KEY = "zenix_splash_shown";
 
 export function SplashScreen() {
-  // Inicializa já oculto se já foi mostrado nesta sessão (evita re-aparecer após login)
-  const [visible, setVisible] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return sessionStorage.getItem(STORAGE_KEY) !== "1";
-  });
+  // IMPORTANTE: começa SEMPRE como false para evitar hydration mismatch
+  // (no SSR não existe sessionStorage). Decidimos no client após mount.
+  const [visible, setVisible] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
 
+  // Decide no client se mostra a splash (após mount, sem mismatch SSR)
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (sessionStorage.getItem(STORAGE_KEY) === "1") return;
+    setVisible(true);
+  }, []);
+
+  useEffect(() => {
     if (!visible) return;
 
     const fadeTimer = setTimeout(() => setFadeOut(true), DURATION_MS - 400);
