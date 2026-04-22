@@ -125,8 +125,9 @@ function AuthPage() {
       }
       return;
     }
+    sessionStorage.setItem("zenix_splash_shown", "1");
     toast.success("Conta criada! 2 créditos grátis adicionados 🎁");
-    window.location.href = "/app";
+    navigate({ to: "/app" });
   };
 
   const handleForgotPassword = async () => {
