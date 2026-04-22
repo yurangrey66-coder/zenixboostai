@@ -432,6 +432,14 @@ export type Database = {
         | "3d_blur"
         | "luxury"
         | "4k_ultra"
+        | "minimalist"
+        | "neon"
+        | "vintage"
+        | "pop_art"
+        | "watercolor"
+        | "flat_design"
+        | "gradient"
+        | "4k_simples"
       app_role: "admin" | "user"
       payment_status: "pending" | "approved" | "rejected"
       plan_type: "daily" | "weekly" | "monthly"
@@ -572,6 +580,14 @@ export const Constants = {
         "3d_blur",
         "luxury",
         "4k_ultra",
+        "minimalist",
+        "neon",
+        "vintage",
+        "pop_art",
+        "watercolor",
+        "flat_design",
+        "gradient",
+        "4k_simples",
       ],
       app_role: ["admin", "user"],
       payment_status: ["pending", "approved", "rejected"],
