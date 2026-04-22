@@ -74,13 +74,16 @@ function AuthPage() {
       return;
     }
 
+    // Marca splash como já exibido para NÃO reaparecer após login
+    sessionStorage.setItem("zenix_splash_shown", "1");
+
     if (cleanEmail === ADMIN_EMAIL) {
       sessionStorage.setItem("zenix_admin_unlock", "1");
       toast.success("Painel executivo desbloqueado");
-      window.location.href = "/admin";
+      navigate({ to: "/admin" });
     } else {
       toast.success("Bem-vindo de volta!");
-      window.location.href = "/app";
+      navigate({ to: "/app" });
     }
   };
 
