@@ -63,9 +63,15 @@ function AuthPage() {
     if (error) {
       const msg = error.message.toLowerCase();
       if (msg.includes("invalid login") || msg.includes("invalid_credentials")) {
-        toast.error("Email ou senha incorretos", {
-          description: "Verifique se digitou corretamente. Se esqueceu a senha, clique em 'Esqueci a senha'.",
-        });
+        if (cleanEmail === ADMIN_EMAIL) {
+          toast.error("Senha do administrador incorreta", {
+            description: "O código foi aceito, mas a senha da conta admin está errada.",
+          });
+        } else {
+          toast.error("Email ou senha incorretos", {
+            description: "Verifique se digitou corretamente. Se esqueceu a senha, clique em 'Esqueci a senha'.",
+          });
+        }
       } else if (msg.includes("email not confirmed")) {
         toast.error("Email ainda não confirmado", { description: "Verifique sua caixa de entrada." });
       } else {
