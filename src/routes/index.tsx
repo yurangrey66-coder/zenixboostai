@@ -37,9 +37,9 @@ function Landing() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
         <div className="relative max-w-5xl mx-auto px-4 pt-20 pb-24 md:pt-32 md:pb-32 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neon bg-accent text-xs font-medium mb-6">
-            <span className="size-1.5 rounded-full bg-neon animate-pulse" />
-            Marketing digital com IA · Moçambique
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-neon/60 bg-accent text-xs font-semibold text-neon glow-neon-sm mb-6">
+            <Sparkles className="size-3.5" />
+            Powered by Banze Intertech
           </div>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold tracking-tight">
             Anúncios <span className="text-gradient-neon">inteligentes</span><br />

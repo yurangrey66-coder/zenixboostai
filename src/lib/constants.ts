@@ -9,9 +9,17 @@ export const AD_STYLES = [
   { id: "promotional", label: "Promocional", emoji: "🎯" },
   { id: "nature", label: "Natureza", emoji: "🌿" },
   { id: "3d_realistic", label: "3D Realista", emoji: "🎨" },
-  { id: "3d_blur", label: "3D Fundo Desfocado", emoji: "🌀" },
+  { id: "3d_blur", label: "Realista Desfocado", emoji: "🌀" },
   { id: "luxury", label: "Luxo", emoji: "👑" },
   { id: "4k_ultra", label: "4K Ultra Realista", emoji: "💎" },
+  { id: "4k_simples", label: "4K Simples", emoji: "🖼️" },
+  { id: "minimalist", label: "Minimalista", emoji: "⚪" },
+  { id: "neon", label: "Neon", emoji: "💡" },
+  { id: "vintage", label: "Vintage", emoji: "📻" },
+  { id: "pop_art", label: "Pop Art", emoji: "🎭" },
+  { id: "watercolor", label: "Aquarela", emoji: "🎨" },
+  { id: "flat_design", label: "Flat Design", emoji: "🟦" },
+  { id: "gradient", label: "Gradiente", emoji: "🌈" },
 ] as const;
 
 export type AdStyleId = (typeof AD_STYLES)[number]["id"];
