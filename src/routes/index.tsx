@@ -86,7 +86,7 @@ function Landing() {
           <h2 className="text-3xl md:text-4xl font-display font-bold">Planos simples, resultados reais</h2>
           <p className="text-muted-foreground mt-2">Escolha o plano que cabe no seu bolso.</p>
         </div>
-        <div className="grid md:grid-cols-3 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {plans.map((p) => (
             <div
               key={p.name}
@@ -100,18 +100,20 @@ function Landing() {
                 </div>
               )}
               <div className="flex items-center gap-2">
-                {p.name === "Mensal" && <Crown className="size-4 text-neon" />}
+                {p.bonus > 0 && <Crown className="size-4 text-neon" />}
                 <h3 className="font-display font-bold text-xl">{p.name}</h3>
               </div>
               <div className="mt-4 flex items-baseline gap-1">
                 <span className="text-4xl font-display font-bold">{p.price}</span>
                 <span className="text-muted-foreground">MT</span>
               </div>
-              <div className="text-sm text-muted-foreground">{p.credits} gerações · {p.days}d</div>
+              <div className="text-sm text-muted-foreground">
+                {p.credits} créditos{p.bonus > 0 ? ` + ${p.bonus} bónus` : ""}
+              </div>
               <ul className="mt-5 space-y-2 text-sm">
                 {p.perks.map((perk) => (
-                  <li key={perk} className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-neon" /> {perk}
+                  <li key={perk} className="flex items-start gap-2">
+                    <span className="size-1.5 rounded-full bg-neon mt-1.5 shrink-0" /> {perk}
                   </li>
                 ))}
               </ul>
