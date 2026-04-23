@@ -9,9 +9,10 @@ export const Route = createFileRoute("/")({
 });
 
 const plans = [
-  { name: "Diário", price: 15, credits: 3, days: 1, perks: ["Estilos básicos", "3 gerações", "24h de acesso"] },
-  { name: "Semanal", price: 45, credits: 15, days: 7, perks: ["Estilos 3D", "15 gerações", "7 dias de acesso"], featured: true },
-  { name: "Mensal", price: 95, credits: 60, days: 30, perks: ["Todos os estilos (Luxo, 4K)", "60 gerações", "30 dias"] },
+  { name: "5 Créditos", price: 10, credits: 5, bonus: 0, perks: ["5 gerações de anúncios", "Todos os estilos disponíveis", "Pagamento via M-Pesa / e-Mola"] },
+  { name: "10 Créditos", price: 20, credits: 10, bonus: 1, perks: ["10 gerações + 1 bónus", "Todos os estilos disponíveis", "Confirmação rápida via WhatsApp"], featured: true },
+  { name: "20 Créditos", price: 35, credits: 20, bonus: 0, perks: ["20 gerações de anúncios", "Todos os estilos disponíveis", "Ideal para uso frequente"] },
+  { name: "25 Créditos", price: 40, credits: 25, bonus: 0, perks: ["25 gerações de anúncios", "Todos os estilos disponíveis", "Melhor custo-benefício"] },
 ];
 
 function Landing() {
@@ -85,7 +86,7 @@ function Landing() {
           <h2 className="text-3xl md:text-4xl font-display font-bold">Planos simples, resultados reais</h2>
           <p className="text-muted-foreground mt-2">Escolha o plano que cabe no seu bolso.</p>
         </div>
-        <div className="grid md:grid-cols-3 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {plans.map((p) => (
             <div
               key={p.name}
@@ -99,18 +100,20 @@ function Landing() {
                 </div>
               )}
               <div className="flex items-center gap-2">
-                {p.name === "Mensal" && <Crown className="size-4 text-neon" />}
+                {p.bonus > 0 && <Crown className="size-4 text-neon" />}
                 <h3 className="font-display font-bold text-xl">{p.name}</h3>
               </div>
               <div className="mt-4 flex items-baseline gap-1">
                 <span className="text-4xl font-display font-bold">{p.price}</span>
                 <span className="text-muted-foreground">MT</span>
               </div>
-              <div className="text-sm text-muted-foreground">{p.credits} gerações · {p.days}d</div>
+              <div className="text-sm text-muted-foreground">
+                {p.credits} créditos{p.bonus > 0 ? ` + ${p.bonus} bónus` : ""}
+              </div>
               <ul className="mt-5 space-y-2 text-sm">
                 {p.perks.map((perk) => (
-                  <li key={perk} className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-neon" /> {perk}
+                  <li key={perk} className="flex items-start gap-2">
+                    <span className="size-1.5 rounded-full bg-neon mt-1.5 shrink-0" /> {perk}
                   </li>
                 ))}
               </ul>
