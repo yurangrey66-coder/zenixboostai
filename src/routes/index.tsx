@@ -9,9 +9,10 @@ export const Route = createFileRoute("/")({
 });
 
 const plans = [
-  { name: "Diário", price: 15, credits: 3, days: 1, perks: ["Estilos básicos", "3 gerações", "24h de acesso"] },
-  { name: "Semanal", price: 45, credits: 15, days: 7, perks: ["Estilos 3D", "15 gerações", "7 dias de acesso"], featured: true },
-  { name: "Mensal", price: 95, credits: 60, days: 30, perks: ["Todos os estilos (Luxo, 4K)", "60 gerações", "30 dias"] },
+  { name: "5 Créditos", price: 10, credits: 5, bonus: 0, perks: ["5 gerações de anúncios", "Todos os estilos disponíveis", "Pagamento via M-Pesa / e-Mola"] },
+  { name: "10 Créditos", price: 20, credits: 10, bonus: 1, perks: ["10 gerações + 1 bónus", "Todos os estilos disponíveis", "Confirmação rápida via WhatsApp"], featured: true },
+  { name: "20 Créditos", price: 35, credits: 20, bonus: 0, perks: ["20 gerações de anúncios", "Todos os estilos disponíveis", "Ideal para uso frequente"] },
+  { name: "25 Créditos", price: 40, credits: 25, bonus: 0, perks: ["25 gerações de anúncios", "Todos os estilos disponíveis", "Melhor custo-benefício"] },
 ];
 
 function Landing() {
