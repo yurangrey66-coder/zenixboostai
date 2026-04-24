@@ -15,6 +15,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AppVideosRouteImport } from './routes/app.videos'
 import { Route as AppPlansRouteImport } from './routes/app.plans'
 import { Route as AppCreateRouteImport } from './routes/app.create'
 import { Route as AppAutoBoostRouteImport } from './routes/app.auto-boost'
@@ -56,6 +57,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const AppVideosRoute = AppVideosRouteImport.update({
+  id: '/videos',
+  path: '/videos',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppPlansRoute = AppPlansRouteImport.update({
   id: '/plans',
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/app/auto-boost': typeof AppAutoBoostRoute
   '/app/create': typeof AppCreateRoute
   '/app/plans': typeof AppPlansRoute
+  '/app/videos': typeof AppVideosRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
 }
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/app/auto-boost': typeof AppAutoBoostRoute
   '/app/create': typeof AppCreateRoute
   '/app/plans': typeof AppPlansRoute
+  '/app/videos': typeof AppVideosRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
 }
@@ -166,6 +174,7 @@ export interface FileRoutesById {
   '/app/auto-boost': typeof AppAutoBoostRoute
   '/app/create': typeof AppCreateRoute
   '/app/plans': typeof AppPlansRoute
+  '/app/videos': typeof AppVideosRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
 }
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/app/auto-boost'
     | '/app/create'
     | '/app/plans'
+    | '/app/videos'
     | '/admin/'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/app/auto-boost'
     | '/app/create'
     | '/app/plans'
+    | '/app/videos'
     | '/admin'
     | '/app'
   id:
@@ -223,6 +234,7 @@ export interface FileRouteTypes {
     | '/app/auto-boost'
     | '/app/create'
     | '/app/plans'
+    | '/app/videos'
     | '/admin/'
     | '/app/'
   fileRoutesById: FileRoutesById
@@ -277,6 +289,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/app/videos': {
+      id: '/app/videos'
+      path: '/videos'
+      fullPath: '/app/videos'
+      preLoaderRoute: typeof AppVideosRouteImport
+      parentRoute: typeof AppRoute
     }
     '/app/plans': {
       id: '/app/plans'
@@ -386,6 +405,7 @@ interface AppRouteChildren {
   AppAutoBoostRoute: typeof AppAutoBoostRoute
   AppCreateRoute: typeof AppCreateRoute
   AppPlansRoute: typeof AppPlansRoute
+  AppVideosRoute: typeof AppVideosRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
@@ -395,6 +415,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAutoBoostRoute: AppAutoBoostRoute,
   AppCreateRoute: AppCreateRoute,
   AppPlansRoute: AppPlansRoute,
+  AppVideosRoute: AppVideosRoute,
   AppIndexRoute: AppIndexRoute,
 }
 

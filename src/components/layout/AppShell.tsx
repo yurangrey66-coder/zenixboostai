@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { LayoutDashboard, Megaphone, CreditCard, Settings, LogOut, Shield, Sparkles, Bot, Menu, User, KeyRound } from "lucide-react";
+import { LayoutDashboard, Megaphone, CreditCard, Settings, LogOut, Shield, Sparkles, Bot, Menu, User, KeyRound, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,6 +19,7 @@ const userNav = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard },
   { to: "/app/ads", label: "Meus Anúncios", icon: Megaphone },
   { to: "/app/create", label: "Criar Anúncio", icon: Sparkles },
+  { to: "/app/videos", label: "Vídeos", icon: Film },
   { to: "/app/auto-boost", label: "Auto Boost", icon: Bot },
   { to: "/app/plans", label: "Planos", icon: CreditCard },
 ];
