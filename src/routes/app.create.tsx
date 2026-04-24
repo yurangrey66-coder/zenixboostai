@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Lock, Sparkles, Upload, X, ImageIcon } from "lucide-react";
+import { Lock, Sparkles, Upload, X, ImageIcon, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { AD_STYLES, AD_LANGUAGES, buildWhatsAppUrl } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -25,6 +25,7 @@ function CreateAd() {
   const [description, setDescription] = useState("");
   const [style, setStyle] = useState<string>("classic");
   const [language, setLanguage] = useState<"pt" | "en">("pt");
+  const [characterEnabled, setCharacterEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [referenceImage, setReferenceImage] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -61,7 +62,7 @@ function CreateAd() {
 
     setLoading(true);
     const { data, error } = await supabase.functions.invoke("generate-ad", {
-      body: { title, description, style, language, referenceImage },
+      body: { title, description, style, language, referenceImage, characterEnabled },
     });
     setLoading(false);
 
@@ -201,6 +202,57 @@ function CreateAd() {
 
         <div className="space-y-2">
           <Label>Estilo visual</Label>
+
+          <button
+            type="button"
+            onClick={() => setCharacterEnabled((v) => !v)}
+            className={cn(
+              "w-full rounded-xl border p-3 text-sm transition flex items-center gap-3",
+              characterEnabled
+                ? "border-neon bg-accent text-neon glow-neon-sm"
+                : "border-border bg-card hover:border-neon/50"
+            )}
+            aria-pressed={characterEnabled}
+          >
+            <div
+              className={cn(
+                "size-9 rounded-lg flex items-center justify-center shrink-0",
+                characterEnabled ? "bg-neon/20" : "bg-muted"
+              )}
+            >
+              <UserRound className="size-5" />
+            </div>
+            <div className="flex-1 text-left">
+              <div className="font-semibold flex items-center gap-2">
+                Ativar Personagem
+                <span
+                  className={cn(
+                    "text-[10px] font-bold px-2 py-0.5 rounded-full",
+                    characterEnabled ? "bg-neon text-neon-foreground" : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {characterEnabled ? "ATIVO" : "OPCIONAL"}
+                </span>
+              </div>
+              <div className="text-[11px] text-muted-foreground mt-0.5">
+                Adiciona um avatar/personagem a representar o teu produto. Combina com qualquer estilo abaixo.
+              </div>
+            </div>
+            <div
+              className={cn(
+                "relative w-10 h-6 rounded-full transition shrink-0",
+                characterEnabled ? "bg-neon" : "bg-muted"
+              )}
+            >
+              <div
+                className={cn(
+                  "absolute top-0.5 size-5 rounded-full bg-background transition-all",
+                  characterEnabled ? "left-[1.125rem]" : "left-0.5"
+                )}
+              />
+            </div>
+          </button>
+
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {AD_STYLES.map((s) => (
               <button
