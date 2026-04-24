@@ -28,6 +28,11 @@ const langInstruction = (lang: string) =>
     ? "All visible text in the image (headline, slogan, call-to-action) MUST be written in correct, natural English. No spelling errors. Marketing tone."
     : "Todo o texto visível na imagem (título, slogan, chamada para ação) DEVE estar em Português de Portugal (PT-PT) correto, sem erros ortográficos, com tom de marketing profissional. NUNCA usar Português do Brasil.";
 
+const characterInstruction = (lang: string) =>
+  lang === "en"
+    ? "VERY IMPORTANT: Include a realistic human character/avatar (mascot or model) interacting with, wearing, holding or representing the product in the advertisement. The character must look natural, expressive and engaging — like a real brand ambassador. Integrate the character harmoniously with the chosen visual style; do not break the style aesthetic."
+    : "MUITO IMPORTANTE: Inclui uma personagem humana realista (mascote, modelo ou avatar) a interagir com, vestir, segurar ou representar o produto no anúncio. A personagem deve parecer natural, expressiva e cativante — como um verdadeiro embaixador da marca. Integra a personagem de forma harmoniosa com o estilo visual escolhido; não quebres a estética do estilo.";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
