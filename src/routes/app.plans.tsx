@@ -52,8 +52,12 @@ function PackagesPage() {
     const nome = profile?.full_name?.trim() || "(sem nome)";
     const telefone = profile?.phone?.trim() || "(sem telefone)";
     const email = user.email || "(sem email)";
+    const bonusInfo = pkg.bonus_credits > 0 ? ` (${pkg.credits} + ${pkg.bonus_credits} bónus)` : "";
     const msg =
-      `Olá ZENIX BOOST, quero comprar o pacote de ${total} créditos por ${pkg.price_mt} MT.\n\n` +
+      `Olá ZENIX BOOST, quero atualizar/comprar o pacote de créditos abaixo:\n\n` +
+      `📦 Pacote: ${pkg.name}\n` +
+      `✨ Créditos: ${total}${bonusInfo}\n` +
+      `💰 Valor: ${pkg.price_mt} MT\n\n` +
       `👤 Nome: ${nome}\n` +
       `📧 Email: ${email}\n` +
       `📱 Telefone: ${telefone}`;

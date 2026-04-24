@@ -75,6 +75,14 @@ function CreateAd() {
   };
 
   if (!profile || profile.status === "blocked") {
+    const nome = profile?.full_name?.trim() || "(sem nome)";
+    const telefone = profile?.phone?.trim() || "(sem telefone)";
+    const email = user?.email || "(sem email)";
+    const buyMsg =
+      `Olá ZENIX BOOST, quero comprar um pacote de créditos.\n\n` +
+      `👤 Nome: ${nome}\n` +
+      `📧 Email: ${email}\n` +
+      `📱 Telefone: ${telefone}`;
     return (
       <div className="max-w-2xl mx-auto space-y-4">
         <StatusBanner />
@@ -85,7 +93,7 @@ function CreateAd() {
             Você precisa de créditos para criar anúncios. Compre um pacote a partir de 10 MT.
           </p>
           <Button asChild className="mt-5 bg-gradient-neon text-neon-foreground">
-            <a href={buildWhatsAppUrl()} target="_blank" rel="noopener">Comprar créditos via WhatsApp</a>
+            <a href={buildWhatsAppUrl(buyMsg)} target="_blank" rel="noopener">Comprar créditos via WhatsApp</a>
           </Button>
         </div>
       </div>
