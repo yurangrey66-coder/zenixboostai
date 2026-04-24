@@ -58,9 +58,16 @@ export const Route = createRootRoute({
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt" className="dark">
-      <head><HeadContent /></head>
-      <body>
+    <html lang="pt" className="dark" style={{ colorScheme: "dark", backgroundColor: "oklch(0.13 0.01 160)" }}>
+      <head>
+        <HeadContent />
+        {/* Inline critical CSS to avoid white flash when link is opened in in-app browsers (WhatsApp, Instagram) */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          html, body { background-color: oklch(0.13 0.01 160); color: oklch(0.97 0.01 150); margin: 0; }
+          html { color-scheme: dark; }
+        ` }} />
+      </head>
+      <body style={{ backgroundColor: "oklch(0.13 0.01 160)", color: "oklch(0.97 0.01 150)", margin: 0 }}>
         {children}
         <Scripts />
       </body>
