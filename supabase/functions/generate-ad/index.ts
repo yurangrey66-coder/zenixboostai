@@ -30,8 +30,40 @@ const langInstruction = (lang: string) =>
 
 const characterInstruction = (lang: string) =>
   lang === "en"
-    ? "VERY IMPORTANT: Include a realistic human character/avatar (mascot or model) interacting with, wearing, holding or representing the product in the advertisement. The character must look natural, expressive and engaging — like a real brand ambassador. Integrate the character harmoniously with the chosen visual style; do not break the style aesthetic."
-    : "MUITO IMPORTANTE: Inclui uma personagem humana realista (mascote, modelo ou avatar) a interagir com, vestir, segurar ou representar o produto no anúncio. A personagem deve parecer natural, expressiva e cativante — como um verdadeiro embaixador da marca. Integra a personagem de forma harmoniosa com o estilo visual escolhido; não quebres a estética do estilo.";
+    ? `VERY IMPORTANT — SMART CHARACTER SELECTION:
+First, ANALYZE the product (title + description + reference image if provided) and infer the correct target audience BEFORE choosing the character. Apply these rules strictly:
+
+1. GENDER:
+   - Female-oriented products (women's clothing, makeup, female cosmetics, bras, dresses, female perfumes, women's accessories, etc.) → use a FEMALE character.
+   - Male-oriented products (men's clothing, beard products, men's perfumes, male accessories, etc.) → use a MALE character.
+   - Unisex/neutral products → choose freely (vary across generations).
+
+2. AGE GROUP:
+   - Adult products (alcohol, professional gear, adult cosmetics, cars, business, luxury) → use an ADULT (woman ~25–45 if female; man ~25–45 if male).
+   - Teen products (school items, teen fashion, gaming, sneakers, snacks) → use a TEEN/ADOLESCENT (~14–18).
+   - Children's products (toys, kids clothes, baby items, candy) → use a CHILD (~6–12) or a parent with child if appropriate.
+   - Senior products (medical, comfort wear, classic items) → use an older person.
+
+3. VARIETY: Vary appearance every generation — different ethnicities, skin tones, hair colors and styles, outfits, poses and facial expressions. Never repeat the same face.
+
+4. The character must interact naturally with, wear, hold or represent the product. Look like a real, expressive brand ambassador. Integrate harmoniously with the chosen visual style; do not break the aesthetic.`
+    : `MUITO IMPORTANTE — ESCOLHA INTELIGENTE DA PERSONAGEM:
+Primeiro, ANALISA o produto (título + descrição + imagem de referência se fornecida) e infere o público-alvo correto ANTES de escolher a personagem. Aplica estas regras de forma rigorosa:
+
+1. GÉNERO:
+   - Produtos femininos (roupa feminina, maquilhagem, cosméticos femininos, sutiãs, vestidos, perfumes femininos, acessórios femininos, etc.) → usa uma personagem FEMININA.
+   - Produtos masculinos (roupa masculina, produtos de barba, perfumes masculinos, acessórios masculinos, etc.) → usa uma personagem MASCULINA.
+   - Produtos unissexo/neutros → escolhe livremente (varia entre gerações).
+
+2. FAIXA ETÁRIA:
+   - Produtos adultos (bebidas alcoólicas, equipamento profissional, cosméticos adultos, carros, negócios, luxo) → usa um ADULTO (senhora ~25–45 se feminino; senhor ~25–45 se masculino).
+   - Produtos para adolescentes (material escolar, moda jovem, gaming, ténis, snacks) → usa um ADOLESCENTE/TEEN (~14–18 — menina ou rapaz consoante o género).
+   - Produtos para crianças (brinquedos, roupa infantil, artigos de bebé, doces) → usa uma CRIANÇA (~6–12) ou pai/mãe com criança se fizer sentido.
+   - Produtos para idosos (medicinais, conforto, clássicos) → usa uma pessoa mais velha.
+
+3. VARIEDADE: Varia a aparência em cada geração — diferentes etnias, tons de pele, cores e penteados de cabelo, roupas, poses e expressões faciais. NUNCA repitas a mesma cara.
+
+4. A personagem deve interagir de forma natural com, vestir, segurar ou representar o produto. Deve parecer uma embaixadora ou embaixador real e expressivo da marca. Integra-a harmoniosamente com o estilo visual escolhido; não quebres a estética.`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
