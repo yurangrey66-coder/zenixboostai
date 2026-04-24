@@ -25,6 +25,7 @@ function CreateAd() {
   const [description, setDescription] = useState("");
   const [style, setStyle] = useState<string>("classic");
   const [language, setLanguage] = useState<"pt" | "en">("pt");
+  const [characterEnabled, setCharacterEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [referenceImage, setReferenceImage] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
