@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
     const { data: { user } } = await userClient.auth.getUser();
     if (!user) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-    const { title, description, style, language, referenceImage } = await req.json();
+    const { title, description, style, language, referenceImage, characterEnabled } = await req.json();
     const lang = language === "en" ? "en" : "pt";
 
     const { data: profile } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
@@ -66,7 +66,8 @@ Deno.serve(async (req) => {
     const { data: ok1 } = await supabase.rpc("consume_credit", { _user_id: user.id, _reason: "Criar anúncio" });
     if (!ok1) return new Response(JSON.stringify({ error: "Sem créditos" }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-    const basePrompt = `${stylePrompts[style] ?? ""}. ${title}. ${description ?? ""}. ${langInstruction(lang)}`.trim();
+    const characterPart = characterEnabled ? ` ${characterInstruction(lang)}` : "";
+    const basePrompt = `${stylePrompts[style] ?? ""}. ${title}. ${description ?? ""}.${characterPart} ${langInstruction(lang)}`.trim();
 
     const userContent = referenceImage
       ? [
