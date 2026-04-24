@@ -40,6 +40,7 @@ export function SplashScreen() {
       className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-400 ${
         fadeOut ? "opacity-0" : "opacity-100"
       }`}
+      style={{ backgroundColor: "oklch(0.13 0.01 160)" }}
       aria-hidden="true"
     >
       {/* Glow background */}
