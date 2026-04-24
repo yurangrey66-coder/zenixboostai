@@ -1,0 +1,3 @@
+ALTER TABLE public.ads 
+ADD COLUMN IF NOT EXISTS video_url TEXT,
+ADD COLUMN IF NOT EXISTS video_duration INTEGER;
