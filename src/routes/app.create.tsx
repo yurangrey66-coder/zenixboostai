@@ -62,7 +62,7 @@ function CreateAd() {
 
     setLoading(true);
     const { data, error } = await supabase.functions.invoke("generate-ad", {
-      body: { title, description, style, language, referenceImage },
+      body: { title, description, style, language, referenceImage, characterEnabled },
     });
     setLoading(false);
 
